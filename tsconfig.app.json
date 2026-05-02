@@ -20,6 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
+    /* Correção de Build */
+    "ignoreDeprecations": "5.0",
     "paths": {
       "@/*": ["./src/*"]
     }
