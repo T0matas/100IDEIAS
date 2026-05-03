@@ -24,7 +24,6 @@ function App() {
     <div className="min-h-screen bg-[#0A0A0A] font-sans flex">
       <Sidebar 
         onOpenFavorites={() => setIsFavoritesOpen(true)} 
-        onSearch={handleSearch}
         onReset={() => {
           setHasGenerated(false);
           setSearchValue("");
