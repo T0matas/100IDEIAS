@@ -70,7 +70,7 @@ function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="pt-16 pb-24 flex flex-col items-center w-full min-h-[600px]"
+                  className="pt-16 pb-24 flex flex-col items-start w-full min-h-[600px]"
                 >
                   <IdeaSwiper 
                     likedIdeas={likedIdeas} 

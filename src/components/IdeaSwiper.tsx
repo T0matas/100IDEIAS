@@ -65,38 +65,56 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
       <motion.div style={{ opacity: nopeOpacity }} className="absolute top-6 right-6 border-4 border-red-500 text-red-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[15deg] z-10 pointer-events-none">
         Passo
       </motion.div>
-
-      <div className={cn("absolute top-5 right-5 z-20 transition-opacity", isFront ? "opacity-100" : "opacity-0 pointer-events-none")}>
-        <button 
-          onClick={onToggleLike}
-          className={cn(
-            "p-2.5 border rounded-full transition-all cursor-pointer active:scale-90 shadow-xl",
-            isLiked 
-              ? "bg-white/10 border-white/40 text-white" 
-              : "bg-background/80 backdrop-blur-md border-white/10 text-gray-400 hover:text-white hover:border-white/40 hover:bg-white/10"
-          )}
-          title={isLiked ? "Remover dos Favoritos" : "Favoritar Ideia"}
-        >
-          <motion.div
-            initial={false}
-            animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Bookmark className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
-          </motion.div>
-        </button>
-      </div>
-
-      <div className="flex flex-col h-full items-center text-center justify-center pointer-events-none select-none relative z-0">
-        <div className="p-3 mb-5 rounded-2xl bg-background border border-white/5 text-white">
-          <Lightbulb className="w-8 h-8" />
+      <div className="flex flex-col h-full pointer-events-none select-none relative z-0">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black shadow-lg">
+              <Lightbulb className="w-4.5 h-4.5" />
+            </div>
+            <span className="text-sm font-bold text-white tracking-tight">
+              100<span className="text-gray-500">ideias</span>
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <div className="text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-white/5 px-2.5 py-1 rounded-md border border-white/5 h-fit">
+              Sugestão IA
+            </div>
+            
+            <button 
+              onClick={onToggleLike}
+              className={cn(
+                "p-2 rounded-xl border transition-all cursor-pointer active:scale-90",
+                isLiked 
+                  ? "bg-white/10 border-white/20 text-white" 
+                  : "bg-white/[0.03] border-white/5 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/10"
+              )}
+              title={isLiked ? "Remover dos Favoritos" : "Favoritar Ideia"}
+            >
+              <motion.div
+                initial={false}
+                animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Bookmark className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
+              </motion.div>
+            </button>
+          </div>
         </div>
-        <h3 className="mb-3 text-2xl font-bold text-white leading-tight">
-          {idea.title}
-        </h3>
-        <p className="text-gray-400 text-base leading-relaxed">
-          {idea.description}
-        </p>
+
+        <div className="flex-1 flex flex-col justify-center">
+          <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight">
+            {idea.title}
+          </h3>
+          <p className="text-gray-400 text-lg leading-relaxed max-w-[90%]">
+            {idea.description}
+          </p>
+        </div>
+
+        <div className="mt-auto pt-6 flex items-center gap-2 text-[11px] font-medium text-gray-500 uppercase tracking-widest">
+          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          Ideia Pronta para Executar
+        </div>
       </div>
     </motion.div>
   );
@@ -142,14 +160,18 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
   }
 
   return (
-    <section className="px-4 pb-24 mx-auto max-w-lg flex flex-col items-center">
-      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-20" />
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Avalie as Ideias</h2>
-        <p className="text-gray-400 text-sm">Arraste para direita se curtiu, esquerda se não.</p>
+    <section className="px-4 pb-24 mx-auto max-w-4xl w-full flex flex-col items-start">
+      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
+      <div className="mb-10 text-left">
+        <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-tight">
+          Avalie as Ideias
+        </h1>
+        <p className="text-gray-400 text-sm max-w-xl">
+          Arraste para a direita as que você curtiu e para a esquerda as que não fazem sentido agora.
+        </p>
       </div>
 
-      <div className="relative w-full h-[360px] mb-10">
+      <div className="relative w-full max-w-lg h-[400px] mb-12 self-center">
         <AnimatePresence>
           {ideas.length > 0 ? (
             // Reversing so that index 0 is rendered last (on top)
@@ -176,7 +198,7 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-surface/50 border border-white/5 rounded-3xl text-center"
+              className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-surface/50 border border-white/5 rounded-[2.5rem] text-center"
             >
               <h3 className="text-2xl font-bold text-white mb-4">Você avaliou todas!</h3>
               <p className="text-gray-400 mb-8">
@@ -198,18 +220,20 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
       </div>
 
       {ideas.length > 0 && (
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-8 self-center">
           <button 
             onClick={() => forceSwipe('left')}
-            className="flex items-center justify-center w-16 h-16 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-95"
+            className="flex items-center justify-center w-20 h-20 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
+            title="Não gostei"
           >
-            <ThumbsDown className="w-8 h-8" />
+            <ThumbsDown className="w-10 h-10" />
           </button>
           <button 
             onClick={() => forceSwipe('right')}
-            className="flex items-center justify-center w-16 h-16 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-95"
+            className="flex items-center justify-center w-20 h-20 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
+            title="Gostei"
           >
-            <ThumbsUp className="w-8 h-8" />
+            <ThumbsUp className="w-10 h-10" />
           </button>
         </div>
       )}

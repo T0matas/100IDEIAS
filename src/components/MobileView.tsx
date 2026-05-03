@@ -81,7 +81,7 @@ export function MobileView({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="flex flex-col items-center w-full"
+                  className="flex flex-col items-start w-full"
                 >
                   <IdeaSwiper 
                     likedIdeas={likedIdeas} 
