@@ -7,6 +7,8 @@ interface SidebarProps {
   onOpenFavorites: () => void
   onReset: () => void
   isResultsView: boolean
+  isLoggedIn: boolean
+  onLogin: () => void
 }
 
 const MENU_ITEMS = [
@@ -14,7 +16,7 @@ const MENU_ITEMS = [
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Plataforma' },
 ]
 
-export function Sidebar({ onOpenFavorites, onReset, isResultsView }: SidebarProps) {
+export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, onLogin }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -43,7 +45,7 @@ export function Sidebar({ onOpenFavorites, onReset, isResultsView }: SidebarProp
   )
 
   return (
-    <aside className="w-60 h-screen border-r border-white/5 bg-[#0A0A0A] flex flex-col fixed left-0 top-0 z-40">
+    <aside className="w-60 h-screen border-r border-white/5 bg-[#0A0A0A] flex flex-col fixed left-0 top-0 z-[150]">
       {/* Logo */}
       <div className="p-5 flex items-center space-x-2.5 mb-1">
         <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-black">
@@ -133,19 +135,25 @@ export function Sidebar({ onOpenFavorites, onReset, isResultsView }: SidebarProp
             
             {/* Background Glow Effect */}
             <motion.div 
-              className={cn(
-                "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity blur-md -z-0",
-                theme === 'dark' ? "bg-blue-500/20" : "bg-yellow-500/20"
-              )}
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity blur-md -z-0 bg-white/10"
             />
           </motion.button>
           <button className="p-2 text-gray-500 hover:text-white hover:bg-white/[0.03] rounded-lg transition-all cursor-pointer group" title="Configurações">
             <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
           </button>
         </div>
-        <button className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all text-xs font-semibold cursor-pointer">
-          <PlusCircle className="w-3.5 h-3.5" />
-          <span>Publish</span>
+        <button 
+          onClick={isLoggedIn ? undefined : onLogin}
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all text-xs font-semibold cursor-pointer"
+        >
+          {isLoggedIn ? (
+            <>
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Publish</span>
+            </>
+          ) : (
+            <span>Log in</span>
+          )}
         </button>
       </div>
     </aside>

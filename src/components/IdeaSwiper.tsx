@@ -36,25 +36,27 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
       style={{ x, rotate }}
       drag={isFront ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
       onDragEnd={isFront ? handleDragEnd : undefined}
       className={cn(
-        "absolute w-full h-[360px] p-7 bg-surface border border-white/5 rounded-3xl shadow-2xl origin-bottom flex flex-col justify-center",
-        isFront ? "cursor-grab active:cursor-grabbing hover:border-white/40 transition-colors" : "pointer-events-none"
+        "absolute w-full h-[380px] p-8 bg-[#1A1A1A] border border-white/10 rounded-[2.5rem] shadow-2xl origin-bottom flex flex-col justify-center",
+        isFront ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
       )}
-      initial={{ scale: 0.9, opacity: 0, y: 50 }}
+      initial={{ scale: 0.9, opacity: 0, y: 20 }}
       animate={{ 
-        scale: isFront ? 1 : 1 - (index * 0.05), 
-        opacity: isFront ? 1 : 1 - (index * 0.2), 
-        y: isFront ? 0 : index * 15,
+        scale: isFront ? 1 : 1 - (index * 0.04), 
+        opacity: isFront ? 1 : 0.4, 
+        y: isFront ? 0 : index * 12,
         zIndex: 100 - index
       }}
       exit={{ 
-        x: x.get() > 0 ? 300 : -300, 
+        x: x.get() > 0 ? 500 : -500, 
         opacity: 0, 
-        scale: 0.9,
-        transition: { duration: 0.3 } 
+        scale: 0.8,
+        rotate: x.get() > 0 ? 25 : -25,
+        transition: { duration: 0.5, ease: [0.32, 0.72, 0, 1] } 
       }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
     >
       {/* Selos de Tinder */}
       <motion.div style={{ opacity: likeOpacity }} className="absolute top-6 left-6 border-4 border-green-500 text-green-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[-15deg] z-10 pointer-events-none">

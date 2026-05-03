@@ -11,14 +11,14 @@ export function FavoritesDrawer({ isOpen, onClose, likedIdeas, onRemoveFavorite 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }} 
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
           />
           <motion.div 
             initial={{ x: "100%" }} 
             animate={{ x: 0 }} 
             exit={{ x: "100%" }} 
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 bottom-0 w-[420px] bg-[#0A0A0A] border-l border-white/5 z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-[#0A0A0A] border-l border-white/5 z-[210] flex flex-col shadow-2xl"
           >
             <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#121212]">
               <div className="flex items-center space-x-3">

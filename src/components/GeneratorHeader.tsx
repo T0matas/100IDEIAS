@@ -109,9 +109,9 @@ export function GeneratorHeader({
   }
 
   return (
-    <div className="max-w-4xl pt-16 pb-8 px-12 relative z-20">
+    <div className="max-w-4xl pt-8 md:pt-16 pb-8 px-4 md:px-12 relative z-20">
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-4xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[90px]">
+      <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[60px] md:min-h-[90px]">
         O que você quer <br/>
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
@@ -119,8 +119,8 @@ export function GeneratorHeader({
         Digite qualquer tema e nossa IA gerará 5 cards de ideias incríveis para você avaliar.
       </p>
 
-      <div className="flex items-start space-x-3 max-w-2xl mt-4">
-        <div className="flex-1 relative flex items-center shadow-[0_4px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_4px_0_rgb(25,25,25)]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-2xl mt-6">
+        <div className="flex-1 relative flex items-center shadow-[0_4px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_4px_0_rgb(25,25,25)] overflow-hidden">
           <input 
             type="text" 
             value={value}
@@ -131,12 +131,12 @@ export function GeneratorHeader({
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleGenerateClick();
             }}
-            placeholder="Ex: negócios sustentáveis, receitas veganas..."
-            className="w-full bg-transparent pl-6 pr-[120px] py-3 text-base text-white placeholder-gray-600 outline-none"
+            placeholder="Ex: negócios sustentáveis..."
+            className="w-full bg-transparent pl-4 md:pl-6 pr-[110px] py-3.5 text-sm md:text-base text-white placeholder-gray-600 outline-none"
           />
           <button 
             onClick={handleSurprise}
-            className="absolute right-2.5 flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-3.5 py-1.5 rounded-xl transition-all text-xs font-bold cursor-pointer active:scale-95 group overflow-hidden"
+            className="absolute right-2 flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-3 py-2 rounded-xl transition-all text-[11px] font-bold cursor-pointer active:scale-95 group"
             title="Preencher com um tema aleatório"
           >
             <Shuffle className={cn(
@@ -149,11 +149,11 @@ export function GeneratorHeader({
         <Button3D 
           onClick={handleGenerateClick}
           color="white"
-          className="px-6 py-2.5 text-sm rounded-xl group overflow-hidden h-[44px]"
+          className="px-8 py-3 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
         >
-          <span>Gerar</span>
+          <span className="font-bold text-sm">Gerar Ideias</span>
           <Send className={cn(
-            "w-3.5 h-3.5 ml-2 transition-all duration-500 ease-out",
+            "w-4 h-4 ml-2 transition-all duration-500 ease-out",
             isFlying && "translate-x-12 -translate-y-12 opacity-0"
           )} />
         </Button3D>
@@ -162,16 +162,19 @@ export function GeneratorHeader({
       <AnimatePresence>
         {showWarning && (
           <motion.div
-            initial={{ opacity: 0, y: -50, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: -50, x: "-50%" }}
-            className="fixed top-8 left-1/2 z-[100]"
+            initial={{ opacity: 0, y: -20, x: "-50%", scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: -20, x: "-50%", scale: 0.9 }}
+            className="fixed top-20 left-1/2 z-[250] w-[90%] max-w-sm"
           >
-            <div className="bg-[#1A1A1A] border border-red-500/30 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
-                <AlertCircle className="w-5 h-5 text-red-500" />
+            <div className="bg-[#1A1A1A] border border-red-500/40 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 backdrop-blur-xl">
+              <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/20">
+                <AlertCircle className="w-6 h-6 text-red-500" />
               </div>
-              <span className="font-medium text-sm">Você já está avaliando ideias. Conclua ou limpe a pesquisa atual primeiro!</span>
+              <div>
+                <p className="font-bold text-sm leading-tight">Ação Bloqueada</p>
+                <p className="text-xs text-gray-400 mt-0.5">Conclua ou limpe a pesquisa atual primeiro!</p>
+              </div>
             </div>
           </motion.div>
         )}
