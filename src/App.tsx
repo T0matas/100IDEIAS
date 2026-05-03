@@ -11,21 +11,32 @@ function App() {
   const [hasGenerated, setHasGenerated] = useState(false)
   const [likedIdeas, setLikedIdeas] = useState<any[]>([])
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+    if (value.trim()) {
+      setHasGenerated(true);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] font-sans flex">
-      <Sidebar onOpenFavorites={() => setIsFavoritesOpen(true)} />
-      <main className="flex-1 ml-64 relative min-h-screen flex flex-col">
-        <button 
-          className="absolute top-8 right-8 z-50 p-2.5 bg-[#1A1A1A] border border-white/5 hover:border-white/20 hover:bg-[#222222] rounded-xl text-gray-400 hover:text-white transition-all shadow-lg cursor-pointer flex items-center justify-center group" 
-          title="Configurações"
-        >
-          <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-300" />
-        </button>
-        
+      <Sidebar 
+        onOpenFavorites={() => setIsFavoritesOpen(true)} 
+        onSearch={handleSearch}
+        onReset={() => {
+          setHasGenerated(false);
+          setSearchValue("");
+        }}
+        isResultsView={hasGenerated}
+      />
+      <main className="flex-1 ml-60 relative min-h-screen flex flex-col">
         <GeneratorHeader 
           onGenerate={() => setHasGenerated(true)} 
           isGenerating={hasGenerated}
+          externalValue={searchValue}
+          onValueChange={setSearchValue}
         />
         
         <div className="border-t border-white/5 w-full"></div>
@@ -47,6 +58,7 @@ function App() {
                   onReset={() => {
                     setHasGenerated(false);
                     setLikedIdeas([]);
+                    setSearchValue("");
                   }}
                 />
               </motion.div>

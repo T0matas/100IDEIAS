@@ -38,14 +38,14 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={isFront ? handleDragEnd : undefined}
       className={cn(
-        "absolute w-full h-[400px] p-8 bg-surface border border-white/5 rounded-3xl shadow-2xl origin-bottom flex flex-col justify-center",
+        "absolute w-full h-[360px] p-7 bg-surface border border-white/5 rounded-3xl shadow-2xl origin-bottom flex flex-col justify-center",
         isFront ? "cursor-grab active:cursor-grabbing hover:border-white/40 transition-colors" : "pointer-events-none"
       )}
       initial={{ scale: 0.9, opacity: 0, y: 50 }}
       animate={{ 
         scale: isFront ? 1 : 1 - (index * 0.05), 
         opacity: isFront ? 1 : 1 - (index * 0.2), 
-        y: isFront ? 0 : index * 20,
+        y: isFront ? 0 : index * 15,
         zIndex: 100 - index
       }}
       exit={{ 
@@ -57,18 +57,18 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
     >
       {/* Selos de Tinder */}
-      <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 border-4 border-green-500 text-green-500 rounded-xl px-4 py-1 text-3xl font-bold uppercase rotate-[-15deg] z-10 pointer-events-none">
+      <motion.div style={{ opacity: likeOpacity }} className="absolute top-6 left-6 border-4 border-green-500 text-green-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[-15deg] z-10 pointer-events-none">
         Gostei
       </motion.div>
-      <motion.div style={{ opacity: nopeOpacity }} className="absolute top-8 right-8 border-4 border-red-500 text-red-500 rounded-xl px-4 py-1 text-3xl font-bold uppercase rotate-[15deg] z-10 pointer-events-none">
+      <motion.div style={{ opacity: nopeOpacity }} className="absolute top-6 right-6 border-4 border-red-500 text-red-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[15deg] z-10 pointer-events-none">
         Passo
       </motion.div>
 
-      <div className={cn("absolute top-6 right-6 z-20 transition-opacity", isFront ? "opacity-100" : "opacity-0 pointer-events-none")}>
+      <div className={cn("absolute top-5 right-5 z-20 transition-opacity", isFront ? "opacity-100" : "opacity-0 pointer-events-none")}>
         <button 
           onClick={onToggleLike}
           className={cn(
-            "p-3 border rounded-full transition-all cursor-pointer active:scale-90 shadow-xl",
+            "p-2.5 border rounded-full transition-all cursor-pointer active:scale-90 shadow-xl",
             isLiked 
               ? "bg-red-500/10 border-red-500/50 text-red-500" 
               : "bg-background/80 backdrop-blur-md border-white/10 text-gray-400 hover:text-red-500 hover:border-red-500/50 hover:bg-red-500/10"
@@ -80,19 +80,19 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
             animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
             transition={{ duration: 0.3 }}
           >
-            <Heart className={cn("w-5 h-5 transition-colors", isLiked && "fill-current")} />
+            <Heart className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
           </motion.div>
         </button>
       </div>
 
       <div className="flex flex-col h-full items-center text-center justify-center pointer-events-none select-none relative z-0">
-        <div className="p-4 mb-6 rounded-2xl bg-background border border-white/5 text-white">
-          <Lightbulb className="w-10 h-10" />
+        <div className="p-3 mb-5 rounded-2xl bg-background border border-white/5 text-white">
+          <Lightbulb className="w-8 h-8" />
         </div>
-        <h3 className="mb-4 text-3xl font-bold text-white leading-tight">
+        <h3 className="mb-3 text-2xl font-bold text-white leading-tight">
           {idea.title}
         </h3>
-        <p className="text-gray-400 text-lg leading-relaxed">
+        <p className="text-gray-400 text-base leading-relaxed">
           {idea.description}
         </p>
       </div>
@@ -140,14 +140,14 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
   }
 
   return (
-    <section className="px-4 pb-32 mx-auto max-w-lg flex flex-col items-center">
-      <div className="w-12 h-1.5 bg-white rounded-full mb-8 opacity-20" />
-      <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">Avalie as Ideias</h2>
-        <p className="text-gray-400">Arraste para direita se curtiu, esquerda se não.</p>
+    <section className="px-4 pb-24 mx-auto max-w-lg flex flex-col items-center">
+      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-20" />
+      <div className="mb-8 text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">Avalie as Ideias</h2>
+        <p className="text-gray-400 text-sm">Arraste para direita se curtiu, esquerda se não.</p>
       </div>
 
-      <div className="relative w-full h-[400px] mb-12">
+      <div className="relative w-full h-[360px] mb-10">
         <AnimatePresence>
           {ideas.length > 0 ? (
             // Reversing so that index 0 is rendered last (on top)

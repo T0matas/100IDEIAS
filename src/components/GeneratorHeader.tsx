@@ -52,8 +52,24 @@ function TypewriterText() {
   )
 }
 
-export function GeneratorHeader({ onGenerate, isGenerating }: { onGenerate: () => void, isGenerating?: boolean }) {
-  const [value, setValue] = useState("")
+export function GeneratorHeader({ 
+  onGenerate, 
+  isGenerating,
+  externalValue,
+  onValueChange
+}: { 
+  onGenerate: () => void, 
+  isGenerating?: boolean,
+  externalValue?: string,
+  onValueChange?: (val: string) => void
+}) {
+  const [internalValue, setInternalValue] = useState("")
+  const value = externalValue !== undefined ? externalValue : internalValue
+  const setValue = (val: string) => {
+    if (onValueChange) onValueChange(val)
+    else setInternalValue(val)
+  }
+  
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [showWarning, setShowWarning] = useState(false)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -93,18 +109,18 @@ export function GeneratorHeader({ onGenerate, isGenerating }: { onGenerate: () =
   }
 
   return (
-    <div className="max-w-4xl pt-24 pb-12 px-12 relative z-20">
-      <div className="w-12 h-1.5 bg-white rounded-full mb-8 opacity-80" />
-      <h1 className="text-5xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[120px]">
+    <div className="max-w-4xl pt-16 pb-8 px-12 relative z-20">
+      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
+      <h1 className="text-4xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[90px]">
         O que você quer <br/>
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
-      <p className="text-gray-400 mb-10 mt-4 text-base">
+      <p className="text-gray-400 mb-8 mt-2 text-sm max-w-xl">
         Digite qualquer tema e nossa IA gerará 5 cards de ideias incríveis para você avaliar.
       </p>
 
-      <div className="flex items-start space-x-4 max-w-3xl mt-4">
-        <div className="flex-1 relative flex items-center shadow-[0_6px_0_rgb(15,15,15)] rounded-full bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_6px_0_rgb(25,25,25)]">
+      <div className="flex items-start space-x-3 max-w-2xl mt-4">
+        <div className="flex-1 relative flex items-center shadow-[0_4px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_4px_0_rgb(25,25,25)]">
           <input 
             type="text" 
             value={value}
@@ -116,15 +132,15 @@ export function GeneratorHeader({ onGenerate, isGenerating }: { onGenerate: () =
               if (e.key === 'Enter') handleGenerateClick();
             }}
             placeholder="Ex: negócios sustentáveis, receitas veganas..."
-            className="w-full bg-transparent pl-8 pr-[140px] py-4 text-lg text-white placeholder-gray-600 outline-none"
+            className="w-full bg-transparent pl-6 pr-[120px] py-3 text-base text-white placeholder-gray-600 outline-none"
           />
           <button 
             onClick={handleSurprise}
-            className="absolute right-3 flex items-center space-x-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-5 py-2.5 rounded-full transition-all text-sm font-bold cursor-pointer active:scale-95 group overflow-hidden"
+            className="absolute right-2.5 flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-3.5 py-1.5 rounded-xl transition-all text-xs font-bold cursor-pointer active:scale-95 group overflow-hidden"
             title="Preencher com um tema aleatório"
           >
             <Shuffle className={cn(
-              "w-4 h-4 transition-transform duration-1000 ease-in-out",
+              "w-3.5 h-3.5 transition-transform duration-1000 ease-in-out",
               isSpinning && "rotate-[360deg]"
             )} />
             <span>Surpresa</span>
@@ -133,11 +149,11 @@ export function GeneratorHeader({ onGenerate, isGenerating }: { onGenerate: () =
         <Button3D 
           onClick={handleGenerateClick}
           color="white"
-          className="px-10 py-4 text-lg rounded-full group overflow-hidden"
+          className="px-8 py-3 text-base rounded-2xl group overflow-hidden h-[50px]"
         >
           <span>Gerar</span>
           <Send className={cn(
-            "w-5 h-5 ml-2 transition-all duration-500 ease-out",
+            "w-4 h-4 ml-2 transition-all duration-500 ease-out",
             isFlying && "translate-x-12 -translate-y-12 opacity-0"
           )} />
         </Button3D>
@@ -197,7 +213,7 @@ export function GeneratorHeader({ onGenerate, isGenerating }: { onGenerate: () =
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8, x: -20 }}
-                  transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
+                  transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
                   className="group flex items-center bg-[#1A1A1A] border border-white/5 rounded-full pl-4 pr-1.5 py-1.5 hover:border-white/20 transition-all shadow-sm"
                 >
                   <button 
