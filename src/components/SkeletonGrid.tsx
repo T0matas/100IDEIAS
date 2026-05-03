@@ -19,18 +19,27 @@ export function SkeletonGrid() {
         {[0, 1, 2].map((i) => (
           <motion.div 
             key={i} 
-            initial={{ opacity: 1 - (i * 0.3) }}
-            animate={{ opacity: [1 - (i * 0.3), 0.8 - (i * 0.3), 1 - (i * 0.3)] }}
+            initial={{ 
+              opacity: 1 - (i * 0.3),
+              scale: 1 - (i * 0.04),
+              y: i * 12
+            }}
+            animate={{ 
+              opacity: [1 - (i * 0.3), 0.8 - (i * 0.3), 1 - (i * 0.3)],
+              scale: 1 - (i * 0.04),
+              y: i * 12
+            }}
             transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut",
-              delay: i * 0.2
+              opacity: {
+                duration: 2, 
+                repeat: Infinity, 
+                ease: "easeInOut",
+                delay: i * 0.2
+              }
             }}
             style={{
-              scale: 1 - (i * 0.04),
-              y: i * 12,
-              zIndex: 10 - i
+              zIndex: 10 - i,
+              transformOrigin: "bottom"
             }}
             className="absolute inset-0 bg-[#1A1A1A] border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between shadow-2xl"
           >

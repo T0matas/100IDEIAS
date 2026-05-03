@@ -71,7 +71,7 @@ export function AIChat() {
                 <div>
                   <h3 className="text-sm font-bold text-white">IA Copiloto</h3>
                   <div className="flex items-center space-x-1.5 mt-0.5">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
                     <p className="text-[11px] font-medium text-green-400">Online e pronto</p>
                   </div>
                 </div>

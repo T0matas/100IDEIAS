@@ -112,7 +112,7 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
         </div>
 
         <div className="mt-auto pt-6 flex items-center gap-2 text-[11px] font-medium text-gray-500 uppercase tracking-widest">
-          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-white" />
           Ideia Pronta para Executar
         </div>
       </div>
