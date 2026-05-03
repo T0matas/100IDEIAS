@@ -149,11 +149,11 @@ export function GeneratorHeader({
         <Button3D 
           onClick={handleGenerateClick}
           color="white"
-          className="px-8 py-3 text-base rounded-2xl group overflow-hidden h-[50px]"
+          className="px-6 py-2.5 text-sm rounded-xl group overflow-hidden h-[44px]"
         >
           <span>Gerar</span>
           <Send className={cn(
-            "w-4 h-4 ml-2 transition-all duration-500 ease-out",
+            "w-3.5 h-3.5 ml-2 transition-all duration-500 ease-out",
             isFlying && "translate-x-12 -translate-y-12 opacity-0"
           )} />
         </Button3D>

@@ -1,21 +1,20 @@
-import { Lightbulb, Sparkles, Heart, Search, Settings, PlusCircle, Sun, Moon } from "lucide-react"
+import { Lightbulb, Compass, Bookmark, Search, Settings, PlusCircle, Sun, Moon } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
 
 interface SidebarProps {
   onOpenFavorites: () => void
-  onSearch: (value: string) => void
   onReset: () => void
   isResultsView: boolean
 }
 
 const MENU_ITEMS = [
-  { id: 'gerador', label: 'Gerador', icon: Sparkles, category: 'Plataforma' },
-  { id: 'favoritas', label: 'Favoritas', icon: Heart, category: 'Plataforma' },
+  { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Plataforma' },
+  { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Plataforma' },
 ]
 
-export function Sidebar({ onOpenFavorites, onSearch, onReset, isResultsView }: SidebarProps) {
+export function Sidebar({ onOpenFavorites, onReset, isResultsView }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const inputRef = useRef<HTMLInputElement>(null)

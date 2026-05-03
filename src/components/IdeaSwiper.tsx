@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { Lightbulb, ThumbsUp, ThumbsDown, RefreshCw, Heart, Search } from 'lucide-react';
+import { Lightbulb, ThumbsUp, ThumbsDown, RefreshCw, Bookmark, Search } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button3D } from './ui/Button3D';
 
@@ -70,8 +70,8 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
           className={cn(
             "p-2.5 border rounded-full transition-all cursor-pointer active:scale-90 shadow-xl",
             isLiked 
-              ? "bg-red-500/10 border-red-500/50 text-red-500" 
-              : "bg-background/80 backdrop-blur-md border-white/10 text-gray-400 hover:text-red-500 hover:border-red-500/50 hover:bg-red-500/10"
+              ? "bg-white/10 border-white/40 text-white" 
+              : "bg-background/80 backdrop-blur-md border-white/10 text-gray-400 hover:text-white hover:border-white/40 hover:bg-white/10"
           )}
           title={isLiked ? "Remover dos Favoritos" : "Favoritar Ideia"}
         >
@@ -80,7 +80,7 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
             animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
             transition={{ duration: 0.3 }}
           >
-            <Heart className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
+            <Bookmark className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
           </motion.div>
         </button>
       </div>
