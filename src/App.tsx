@@ -14,6 +14,7 @@ function App() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState("")
   const [isLoginOpen, setIsLoginOpen] = useState(false)
 
   return (
@@ -29,6 +30,7 @@ function App() {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         isLoggedIn={isLoggedIn}
+        userEmail={userEmail}
         onOpenLogin={() => setIsLoginOpen(true)}
         onReset={() => {
           setHasGenerated(false);
@@ -46,6 +48,7 @@ function App() {
           }}
           isResultsView={hasGenerated}
           isLoggedIn={isLoggedIn}
+          userEmail={userEmail}
           onLogin={() => setIsLoginOpen(true)}
         />
         <main className="flex-1 ml-60 relative min-h-screen flex flex-col">
@@ -106,7 +109,10 @@ function App() {
       <LoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
-        onLogin={() => setIsLoggedIn(true)}
+        onLogin={(email) => {
+          setIsLoggedIn(true)
+          setUserEmail(email)
+        }}
       />
     </>
   )

@@ -71,7 +71,7 @@ export function GeneratorHeader({
   }
   
   const [recentSearches, setRecentSearches] = useState<string[]>([])
-  const [showWarning, setShowWarning] = useState(false)
+  const [warningType, setWarningType] = useState<'blocked' | 'empty' | null>(null)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isFlying, setIsFlying] = useState(false)
 
@@ -91,11 +91,15 @@ export function GeneratorHeader({
   }
 
   const handleGenerateClick = () => {
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      setWarningType('empty');
+      setTimeout(() => setWarningType(null), 3000);
+      return;
+    }
 
     if (isGenerating) {
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 3000);
+      setWarningType('blocked');
+      setTimeout(() => setWarningType(null), 3000);
       return;
     }
 
@@ -126,7 +130,7 @@ export function GeneratorHeader({
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
-              if (showWarning) setShowWarning(false);
+              if (warningType) setWarningType(null);
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleGenerateClick();
@@ -160,20 +164,24 @@ export function GeneratorHeader({
       </div>
 
       <AnimatePresence>
-        {showWarning && (
+        {warningType && (
           <motion.div
-            initial={{ opacity: 0, y: -20, x: "-50%", scale: 0.9 }}
+            initial={{ opacity: 0, y: -20, x: "-50%", scale: 0.95 }}
             animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
-            exit={{ opacity: 0, y: -20, x: "-50%", scale: 0.9 }}
-            className="fixed top-20 left-1/2 z-[250] w-[90%] max-w-sm"
+            exit={{ opacity: 0, y: -20, x: "-50%", scale: 0.95 }}
+            className="fixed top-20 md:top-8 left-1/2 z-[300] w-[90%] sm:w-auto max-w-sm"
           >
-            <div className="bg-[#1A1A1A] border border-red-500/40 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 backdrop-blur-xl">
-              <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/20">
-                <AlertCircle className="w-6 h-6 text-red-500" />
+            <div className="bg-[#1A1A1A] border border-red-500/30 text-white px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl shadow-2xl flex items-center space-x-3 md:space-x-4 backdrop-blur-xl">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/20">
+                <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
               </div>
-              <div>
-                <p className="font-bold text-sm leading-tight">Ação Bloqueada</p>
-                <p className="text-xs text-gray-400 mt-0.5">Conclua ou limpe a pesquisa atual primeiro!</p>
+              <div className="flex-1">
+                <p className="font-bold text-xs md:text-sm leading-tight">
+                  {warningType === 'blocked' ? "Ação Bloqueada" : "Campo Vazio"}
+                </p>
+                <p className="text-[11px] md:text-xs text-gray-400 mt-0.5 leading-snug">
+                  {warningType === 'blocked' ? "Conclua ou limpe a pesquisa atual primeiro!" : "Insira algo primeiro para gerar ideias!"}
+                </p>
               </div>
             </div>
           </motion.div>

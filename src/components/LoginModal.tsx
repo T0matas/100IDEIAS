@@ -6,7 +6,7 @@ import { cn } from "../lib/utils"
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
-  onLogin: () => void
+  onLogin: (email: string) => void
 }
 
 type View = 'login' | 'signup'
@@ -28,9 +28,9 @@ function BrandingPanel({ compact = false }: { compact?: boolean }) {
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/[0.04] rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
       <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.03] rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
-      <div className="flex items-center gap-3 relative z-10">
-        <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-black shadow-lg flex-shrink-0">
-          <Lightbulb className="w-5 h-5" />
+      <div className="flex items-center gap-2.5 relative z-10">
+        <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black shadow-lg flex-shrink-0">
+          <Lightbulb className="w-3.5 h-3.5" />
         </div>
         <span className="text-white font-bold text-lg tracking-tight">
           100<span className="text-gray-500">ideias</span>
@@ -79,7 +79,7 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
     setIsLoading(true)
     await new Promise(r => setTimeout(r, 1400))
     setIsLoading(false)
-    onLogin()
+    onLogin(email)
     onClose()
   }
 

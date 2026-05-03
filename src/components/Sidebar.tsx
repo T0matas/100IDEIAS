@@ -1,4 +1,4 @@
-import { Lightbulb, Compass, Bookmark, Search, Settings, PlusCircle, Sun, Moon } from "lucide-react"
+import { Lightbulb, Compass, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
@@ -8,6 +8,7 @@ interface SidebarProps {
   onReset: () => void
   isResultsView: boolean
   isLoggedIn: boolean
+  userEmail?: string
   onLogin: () => void
 }
 
@@ -16,9 +17,10 @@ const MENU_ITEMS = [
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Plataforma' },
 ]
 
-export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, onLogin }: SidebarProps) {
+export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -46,14 +48,48 @@ export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, o
 
   return (
     <aside className="w-60 h-screen border-r border-white/5 bg-[#0A0A0A] flex flex-col fixed left-0 top-0 z-[150]">
-      {/* Logo */}
-      <div className="p-5 flex items-center space-x-2.5 mb-1">
-        <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-black">
-          <Lightbulb className="w-4 h-4" />
-        </div>
-        <span className="text-lg font-bold text-white tracking-tight">
-          100<span className="text-gray-500">ideias</span>
-        </span>
+      {/* Logo Area */}
+      <div 
+        className="relative p-5 pb-1 w-full"
+        onMouseEnter={() => setIsUserMenuOpen(true)}
+        onMouseLeave={() => setIsUserMenuOpen(false)}
+      >
+        <button className="flex items-center space-x-2.5 w-full hover:bg-white/5 p-2 -ml-2 rounded-xl transition-colors group">
+          <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black shadow-sm group-hover:scale-105 transition-transform shrink-0">
+            <Lightbulb className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-base font-bold text-white tracking-tight flex-1 text-left">
+            100<span className="text-gray-500">ideias</span>
+          </span>
+          <ChevronDown className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+        </button>
+
+        <AnimatePresence>
+          {isUserMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -5, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -5, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-5 top-[64px] w-52 bg-[#121212] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+            >
+              <div className="p-3 border-b border-white/10 flex flex-col">
+                <span className="text-sm font-medium text-white truncate">
+                  {isLoggedIn ? (userEmail ? userEmail.split('@')[0] : "Conta de Login") : "Não conectado"}
+                </span>
+                <span className="text-xs text-gray-500 mt-0.5 truncate">
+                  {isLoggedIn ? (userEmail || "usuario@email.com") : "Faça login para salvar"}
+                </span>
+              </div>
+              <div className="p-1.5">
+                <button className="w-full text-left px-2.5 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-2 cursor-pointer">
+                  <HelpCircle className="w-4 h-4" />
+                  <span>Ajuda</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Search Bar */}

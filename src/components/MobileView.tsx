@@ -18,6 +18,7 @@ interface MobileViewProps {
   setSearchValue: (val: string) => void
   onReset: () => void
   isLoggedIn: boolean
+  userEmail?: string
   onOpenLogin: () => void
 }
 
@@ -31,6 +32,7 @@ export function MobileView({
   setSearchValue,
   onReset,
   isLoggedIn,
+  userEmail,
   onOpenLogin
 }: MobileViewProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -111,6 +113,7 @@ export function MobileView({
         onReset={onReset}
         isResultsView={hasGenerated}
         isLoggedIn={isLoggedIn}
+        userEmail={userEmail}
         onOpenLogin={onOpenLogin}
       />
     </div>

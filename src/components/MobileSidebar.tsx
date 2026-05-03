@@ -8,7 +8,9 @@ import {
   ChevronRight,
   PlusCircle,
   X,
-  Lightbulb
+  Lightbulb,
+  ChevronDown,
+  HelpCircle
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -21,6 +23,7 @@ interface MobileSidebarProps {
   onReset: () => void
   isResultsView: boolean
   isLoggedIn: boolean
+  userEmail?: string
   onOpenLogin: () => void
 }
 
@@ -36,10 +39,12 @@ export function MobileSidebar({
   onReset, 
   isResultsView,
   isLoggedIn,
+  userEmail,
   onOpenLogin
 }: MobileSidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
   useEffect(() => {
     if (theme === 'light') {
@@ -75,24 +80,60 @@ export function MobileSidebar({
             className="fixed left-0 top-0 bottom-0 w-[300px] bg-[#0A0A0A] border-r border-white/5 z-[210] flex flex-col"
           >
             {/* Header / Logo */}
-            <div className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-black shadow-lg">
-                  <Lightbulb className="w-5 h-5" />
+            <div className="p-6 pb-2">
+              <div className="flex items-center justify-between mb-4">
+                <div 
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2.5 cursor-pointer group"
+                >
+                  <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black shadow-lg group-active:scale-95 transition-transform shrink-0">
+                    <Lightbulb className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base font-bold text-white tracking-tight leading-none">
+                        100<span className="text-gray-500">ideias</span>
+                      </span>
+                      <ChevronDown className={cn("w-4 h-4 text-gray-500 transition-transform", isUserMenuOpen && "rotate-180")} />
+                    </div>
+                    <span className="text-[10px] text-gray-500 font-medium mt-1">Plataforma</span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-base font-bold text-white tracking-tight leading-none">
-                    100ideias
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-medium mt-1">Plataforma</span>
-                </div>
+                <button 
+                  onClick={onClose} 
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all active:scale-90"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button 
-                onClick={onClose} 
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all active:scale-90"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-[#121212] border border-white/10 rounded-xl mb-4">
+                      <div className="p-3 border-b border-white/10 flex flex-col">
+                        <span className="text-sm font-medium text-white truncate">
+                          {isLoggedIn ? (userEmail ? userEmail.split('@')[0] : "Conta de Login") : "Não conectado"}
+                        </span>
+                        <span className="text-xs text-gray-500 mt-0.5 truncate">
+                          {isLoggedIn ? (userEmail || "usuario@email.com") : "Faça login para salvar"}
+                        </span>
+                      </div>
+                      <div className="p-1.5">
+                        <button className="w-full text-left px-2.5 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-2">
+                          <HelpCircle className="w-4 h-4" />
+                          <span>Ajuda</span>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Search */}
