@@ -16,7 +16,7 @@ router.get("/", async (req: Request, res: Response) => {
       }
     });
 
-    res.json(ideas.map(idea => ({
+    res.json(ideas.map((idea: any) => ({
       id: idea.id,
       userId: idea.userId,
       title: idea.title,
