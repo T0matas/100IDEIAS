@@ -22,18 +22,18 @@ function TypewriterText() {
 
   useEffect(() => {
     const word = words[currentWordIndex]
-    
+
     const timeout = setTimeout(() => {
       if (!isDeleting) {
         setCurrentText(word.substring(0, currentText.length + 1))
-        
+
         if (currentText === word) {
           // Pause before deleting
           setTimeout(() => setIsDeleting(true), 2500)
         }
       } else {
         setCurrentText(word.substring(0, currentText.length - 1))
-        
+
         if (currentText === "") {
           setIsDeleting(false)
           setCurrentWordIndex((prev) => (prev + 1) % words.length)
@@ -52,16 +52,16 @@ function TypewriterText() {
   )
 }
 
-export function GeneratorHeader({ 
-  onGenerate, 
+export function GeneratorHeader({
+  onGenerate,
   isGenerating,
   externalValue,
   onValueChange,
   usageCount,
   isUpgradeModalOpen,
   setIsUpgradeModalOpen
-}: { 
-  onGenerate: () => void, 
+}: {
+  onGenerate: () => void,
   isGenerating?: boolean,
   externalValue?: string,
   onValueChange?: (val: string) => void,
@@ -75,7 +75,7 @@ export function GeneratorHeader({
     if (onValueChange) onValueChange(val)
     else setInternalValue(val)
   }
-  
+
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const [recentSearches, setRecentSearches] = useState<string[]>([])
@@ -134,7 +134,7 @@ export function GeneratorHeader({
     <div className="max-w-4xl pt-8 md:pt-16 pb-8 px-4 md:px-12 relative z-20">
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
       <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[60px] md:min-h-[90px]">
-        O que você quer <br/>
+        O que você quer <br />
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
       <p className="text-gray-400 mb-8 mt-2 text-sm max-w-xl">
@@ -143,8 +143,8 @@ export function GeneratorHeader({
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-2xl mt-6">
         <div className="flex-1 relative flex items-center shadow-[0_4px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_4px_0_rgb(25,25,25)] overflow-hidden">
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
@@ -156,7 +156,7 @@ export function GeneratorHeader({
             placeholder="Ex: negócios sustentáveis..."
             className="w-full bg-transparent pl-4 md:pl-6 pr-[110px] py-3.5 text-sm md:text-base text-white placeholder-gray-600 outline-none"
           />
-          <button 
+          <button
             onClick={handleSurprise}
             className="absolute right-2 flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-3 py-2 rounded-xl transition-all text-[11px] font-bold cursor-pointer active:scale-95 group"
             title="Preencher com um tema aleatório"
@@ -168,7 +168,7 @@ export function GeneratorHeader({
             <span>Surpresa</span>
           </button>
         </div>
-        <Button3D 
+        <Button3D
           onClick={handleGenerateClick}
           color="white"
           className="px-8 py-3 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
@@ -184,13 +184,13 @@ export function GeneratorHeader({
       {true && (
         <div className="mt-4 flex items-center space-x-3 px-1 max-w-2xl">
           <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${Math.min((usageCount / 5) * 100, 100)}%` }}
               className={cn(
                 "h-full transition-all duration-700 ease-out",
-                usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : 
-                usageCount >= 3 ? "bg-amber-500" : "bg-white/20"
+                usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" :
+                  usageCount >= 3 ? "bg-amber-500" : "bg-white/20"
               )}
             />
           </div>
@@ -228,7 +228,7 @@ export function GeneratorHeader({
       <AnimatePresence>
         {isUpgradeModalOpen && (
           <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -256,31 +256,31 @@ export function GeneratorHeader({
                     </motion.div>
                   ) : (
                     <motion.div
-                      animate={{ 
+                      animate={{
                         scale: [1, 1.1, 1],
                         rotate: [0, 5, -5, 0]
                       }}
-                      transition={{ 
-                        duration: 3, 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
                       }}
                     >
                       <Shuffle className="w-10 h-10" />
                     </motion.div>
                   )}
                 </div>
-                
+
                 <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">
                   {isProcessingPayment ? "Aguarde um momento..." : "Limite Atingido!"}
                 </h2>
                 <p className="text-gray-400 mb-10 leading-relaxed text-sm md:text-base">
-                  {isProcessingPayment 
+                  {isProcessingPayment
                     ? "Estamos preparando seu acesso ilimitado. Não feche esta janela enquanto processamos seu pedido."
                     : "Você já explorou suas 5 ideias gratuitas de hoje. Desbloqueie o acesso ilimitado para continuar criando sem barreiras."}
                 </p>
 
-                <Button3D 
+                <Button3D
                   onClick={handleUpgrade}
                   color="white"
                   className="w-full py-4 rounded-2xl group overflow-hidden mb-6 h-14"
@@ -290,9 +290,9 @@ export function GeneratorHeader({
                     {isProcessingPayment ? "Processando..." : "Plano IDEIA — R$ 7,99"}
                   </span>
                 </Button3D>
-                
+
                 {!isProcessingPayment && (
-                  <button 
+                  <button
                     onClick={() => setIsUpgradeModalOpen(false)}
                     className="text-gray-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-[0.2em]"
                   >
@@ -312,7 +312,7 @@ export function GeneratorHeader({
             <span>Pesquisas Recentes</span>
           </div>
           {recentSearches.length > 0 && (
-            <button 
+            <button
               onClick={handleClearAllRecents}
               className="text-[10px] uppercase tracking-widest font-bold text-gray-600 hover:text-white transition-colors cursor-pointer"
             >
@@ -320,11 +320,11 @@ export function GeneratorHeader({
             </button>
           )}
         </div>
-        
+
         <div className="flex flex-wrap gap-2 max-w-3xl min-h-[40px] items-center">
           <AnimatePresence mode="popLayout">
             {recentSearches.length === 0 ? (
-              <motion.div 
+              <motion.div
                 key="empty-state"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -335,7 +335,7 @@ export function GeneratorHeader({
               </motion.div>
             ) : (
               recentSearches.map((term) => (
-                <motion.div 
+                <motion.div
                   key={term}
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -344,13 +344,13 @@ export function GeneratorHeader({
                   transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
                   className="group flex items-center bg-[#1A1A1A] border border-white/5 rounded-full pl-4 pr-1.5 py-1.5 hover:border-white/20 transition-all shadow-sm"
                 >
-                  <button 
+                  <button
                     onClick={() => setValue(term)}
                     className="text-gray-400 hover:text-white transition-colors cursor-pointer text-sm font-medium mr-2"
                   >
                     {term}
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleRemoveRecent(term)}
                     className="w-5 h-5 flex items-center justify-center rounded-full bg-white/5 text-gray-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
                   >
