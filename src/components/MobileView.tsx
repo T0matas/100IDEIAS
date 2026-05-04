@@ -63,25 +63,18 @@ export function MobileView({
         onFavoritesClick={() => setIsGostadasOpen(true)}
       />
       
-      <main className="flex-1 flex flex-col pt-4 pb-10 overflow-y-auto overflow-x-hidden">
+      <main className="flex-1 flex flex-col pt-0 pb-10 overflow-y-auto overflow-x-hidden">
         {/* Generator Section */}
-        <section className="px-5 mb-10">
-          <div className="flex items-center justify-between mb-5 px-1">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Gerador de Ideias</h2>
-          </div>
-          
-          <div className="bg-[#121212] border border-white/5 rounded-[2rem] p-5 shadow-2xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-            <GeneratorHeader 
-              onGenerate={onGenerate}
-              isGenerating={hasGenerated}
-              externalValue={searchValue}
-              onValueChange={setSearchValue}
-              usageCount={usageCount}
-              isUpgradeModalOpen={isUpgradeModalOpen}
-              setIsUpgradeModalOpen={setIsUpgradeModalOpen}
-            />
-          </div>
+        <section className="mb-4">
+          <GeneratorHeader 
+            onGenerate={onGenerate}
+            isGenerating={hasGenerated}
+            externalValue={searchValue}
+            onValueChange={setSearchValue}
+            usageCount={usageCount}
+            isUpgradeModalOpen={isUpgradeModalOpen}
+            setIsUpgradeModalOpen={setIsUpgradeModalOpen}
+          />
         </section>
 
         {/* Results/Gallery Section */}

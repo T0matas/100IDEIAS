@@ -131,9 +131,9 @@ export function GeneratorHeader({
   }
 
   return (
-    <div className="max-w-4xl pt-8 md:pt-16 pb-8 px-4 md:px-12 relative z-20">
-      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-tight min-h-[60px] md:min-h-[90px]">
+    <div className="max-w-4xl pt-6 md:pt-16 pb-8 px-5 md:px-12 relative z-20">
+      <div className="w-8 h-1 bg-white rounded-full mb-6 opacity-80" />
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-[1.1] min-h-[70px] md:min-h-[90px]">
         O que você quer <br />
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
@@ -154,7 +154,7 @@ export function GeneratorHeader({
               if (e.key === 'Enter') handleGenerateClick();
             }}
             placeholder="Ex: negócios sustentáveis..."
-            className="w-full bg-transparent pl-4 md:pl-6 pr-[110px] py-3.5 text-sm md:text-base text-white placeholder-gray-600 outline-none"
+            className="w-full bg-transparent pl-5 md:pl-6 pr-[105px] py-4 text-sm md:text-base text-white placeholder-gray-600 outline-none"
           />
           <button
             onClick={handleSurprise}
@@ -182,20 +182,20 @@ export function GeneratorHeader({
       </div>
 
       {true && (
-        <div className="mt-4 flex items-center space-x-3 px-1 max-w-2xl">
-          <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+        <div className="mt-5 flex items-center space-x-3 px-1 max-w-2xl">
+          <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${Math.min((usageCount / 5) * 100, 100)}%` }}
               className={cn(
                 "h-full transition-all duration-700 ease-out",
                 usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" :
-                  usageCount >= 3 ? "bg-amber-500" : "bg-white/20"
+                  usageCount >= 3 ? "bg-amber-500" : "bg-white/30"
               )}
             />
           </div>
-          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">
-            {usageCount}/5 <span className="hidden sm:inline">gerações grátis</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">
+            {usageCount}/5 <span className="hidden xs:inline">gerações grátis</span>
           </span>
         </div>
       )}
