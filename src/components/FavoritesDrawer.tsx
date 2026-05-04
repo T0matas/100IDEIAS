@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ThumbsUp, Trash2, Lightbulb, Bookmark } from "lucide-react"
-import { cn } from "../lib/utils"
 
 export function FavoritesDrawer({ isOpen, onClose, likedIdeas, onRemoveFavorite, title, type }: any) {
   return (
@@ -45,25 +44,44 @@ export function FavoritesDrawer({ isOpen, onClose, likedIdeas, onRemoveFavorite,
             <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
               <AnimatePresence mode="popLayout">
                 {likedIdeas.length === 0 ? (
-                  <motion.div 
-                    key="empty-favorites"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="flex flex-col items-center justify-center h-full text-center space-y-4"
-                  >
-                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-2">
-                      {type === 'liked' ? <ThumbsUp className="w-8 h-8 text-white/20" /> : <Bookmark className="w-8 h-8 text-white/20" />}
+                  <div className="flex flex-col space-y-12">
+                    <div className="flex flex-col items-start text-left space-y-2 pt-4">
+                      <div className="w-12 h-1 bg-white/20 rounded-full mb-4" />
+                      <h3 className="text-3xl font-bold text-white tracking-tight">Nenhuma ideia favoritada</h3>
+                      <p className="text-gray-500 text-sm">As ideias que você marcar como favoritas aparecerão nesta lista</p>
                     </div>
-                    <h3 className="text-lg font-bold text-white">
-                      {type === 'liked' ? "Nenhuma ideia curtida ainda" : "Nenhuma ideia favorita ainda"}
-                    </h3>
-                    <p className="text-gray-500 text-sm px-4">
-                      {type === 'liked' 
-                        ? "Quando você curtir uma ideia incrível, ela ficará guardada aqui." 
-                        : "As ideias que você marcar como favoritas aparecerão nesta lista."}
-                    </p>
-                  </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-20 pointer-events-none select-none">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="group relative bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col h-[280px]"
+                        >
+                          <div className="flex items-start justify-between mb-8">
+                            <div className="w-10 h-10 rounded-xl bg-white/10" />
+                            <div className="flex gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-white/5" />
+                              <div className="w-8 h-8 rounded-lg bg-white/5" />
+                            </div>
+                          </div>
+
+                          <div className="space-y-4 flex-1">
+                            <div className="w-3/4 h-6 bg-white/10 rounded-lg" />
+                            <div className="space-y-2">
+                              <div className="w-full h-3 bg-white/5 rounded-md" />
+                              <div className="w-full h-3 bg-white/5 rounded-md" />
+                              <div className="w-2/3 h-3 bg-white/5 rounded-md" />
+                            </div>
+                          </div>
+
+                          <div className="mt-8 pt-4 border-t border-white/5 flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-white/10" />
+                            <div className="w-20 h-2 bg-white/5 rounded-full" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <AnimatePresence mode="popLayout">

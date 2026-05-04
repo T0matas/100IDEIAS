@@ -140,7 +140,6 @@ function App() {
                     setFavoriteIdeas={setFavoriteIdeas}
                     onReset={() => {
                       setHasGenerated(false);
-                      setLikedIdeas([]);
                       setSearchValue("");
                     }}
                     onIncrementUsage={handleIncrementUsage}

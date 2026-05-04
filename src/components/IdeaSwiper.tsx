@@ -38,9 +38,14 @@ function SwipeCard({
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   
-  // Opacidade dinâmica para os selos de "Gostei" e "Passo"
-  const likeOpacity = useTransform(x, [10, 100], [0, 1]);
-  const nopeOpacity = useTransform(x, [-10, -100], [0, 1]);
+  // Opacidade, escala e rotação dinâmica para os selos de "Gostei" e "Passo"
+  const likeOpacity = useTransform(x, [20, 120], [0, 1]);
+  const likeScale = useTransform(x, [20, 120], [0.6, 1.1]);
+  const likeRotate = useTransform(x, [20, 120], [-15, -10]);
+
+  const nopeOpacity = useTransform(x, [-20, -120], [0, 1]);
+  const nopeScale = useTransform(x, [-20, -120], [0.6, 1.1]);
+  const nopeRotate = useTransform(x, [-20, -120], [15, 10]);
 
   const handleDragEnd = (_: any, info: any) => {
     const offset = info.offset.x;
@@ -82,10 +87,16 @@ function SwipeCard({
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
     >
       {/* Selos de Tinder */}
-      <motion.div style={{ opacity: likeOpacity }} className="absolute top-6 left-6 border-4 border-green-500 text-green-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[-15deg] z-10 pointer-events-none">
+      <motion.div 
+        style={{ opacity: likeOpacity, scale: likeScale, rotate: likeRotate }} 
+        className="absolute top-16 left-12 border-[6px] border-green-500 text-green-500 rounded-2xl px-6 py-2 text-4xl font-black uppercase z-20 pointer-events-none shadow-[0_0_30px_rgba(34,197,94,0.2)]"
+      >
         Gostei
       </motion.div>
-      <motion.div style={{ opacity: nopeOpacity }} className="absolute top-6 right-6 border-4 border-red-500 text-red-500 rounded-xl px-3 py-0.5 text-2xl font-bold uppercase rotate-[15deg] z-10 pointer-events-none">
+      <motion.div 
+        style={{ opacity: nopeOpacity, scale: nopeScale, rotate: nopeRotate }} 
+        className="absolute top-16 right-12 border-[6px] border-red-500 text-red-500 rounded-2xl px-6 py-2 text-4xl font-black uppercase z-20 pointer-events-none shadow-[0_0_30px_rgba(239,68,68,0.2)]"
+      >
         Passo
       </motion.div>
       <div className="flex flex-col h-full pointer-events-none select-none relative z-0">

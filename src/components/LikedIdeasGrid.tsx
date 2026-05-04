@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ThumbsUp, Bookmark, Trash2, LayoutGrid, Lightbulb } from "lucide-react"
+import { X, ThumbsUp, Bookmark, Trash2, Lightbulb } from "lucide-react"
 import { cn } from "../lib/utils"
+
+
 
 interface LikedIdeasGridProps {
   isOpen: boolean
@@ -54,8 +56,8 @@ export function LikedIdeasGrid({
                   <ThumbsUp className="w-6 h-6 text-gray-500 group-hover/icon:text-white transition-colors" />
                 </motion.div>
                 <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Ideias Gostadas</h2>
-                  <p className="text-xs md:text-sm text-gray-500 font-medium">{likedIdeas.length} {likedIdeas.length === 1 ? 'ideia' : 'ideias'} guardadas</p>
+                  <h2 className="text-xl font-bold text-white leading-tight">Seus Gostos</h2>
+                  <p className="text-xs text-gray-500 font-medium">{likedIdeas.length} {likedIdeas.length === 1 ? 'ideia' : 'ideias'} guardadas</p>
                 </div>
               </div>
               
@@ -70,13 +72,42 @@ export function LikedIdeasGrid({
             {/* Scrollable Grid Area */}
             <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-[#0A0A0A]/50">
               {likedIdeas.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-                  <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
-                    <LayoutGrid className="w-8 h-8 text-gray-600" />
+                <div className="flex flex-col space-y-12">
+                  <div className="flex flex-col items-start text-left space-y-2 pt-4">
+                    <div className="w-12 h-1 bg-white/20 rounded-full mb-4" />
+                    <h3 className="text-3xl font-bold text-white tracking-tight">Nenhuma ideia gostada</h3>
+                    <p className="text-gray-500 text-sm">As ideias que você marcar como "gostei" aparecerão nesta lista</p>
                   </div>
-                  <div className="max-w-md">
-                    <h3 className="text-lg font-bold text-white mb-2">Nenhuma ideia curtida ainda</h3>
-                    <p className="text-sm text-gray-500">Arraste os cards para a direita no gerador para salvar suas ideias nesta galeria.</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-20 pointer-events-none select-none">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="group relative bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col h-[280px]"
+                      >
+                        <div className="flex items-start justify-between mb-8">
+                          <div className="w-10 h-10 rounded-xl bg-white/10" />
+                          <div className="flex gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-white/5" />
+                            <div className="w-8 h-8 rounded-lg bg-white/5" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 flex-1">
+                          <div className="w-3/4 h-6 bg-white/10 rounded-lg" />
+                          <div className="space-y-2">
+                            <div className="w-full h-3 bg-white/5 rounded-md" />
+                            <div className="w-full h-3 bg-white/5 rounded-md" />
+                            <div className="w-2/3 h-3 bg-white/5 rounded-md" />
+                          </div>
+                        </div>
+
+                        <div className="mt-8 pt-4 border-t border-white/5 flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-white/10" />
+                          <div className="w-20 h-2 bg-white/5 rounded-full" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : (

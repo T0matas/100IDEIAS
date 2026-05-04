@@ -1,4 +1,4 @@
-import { Lightbulb, Compass, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle } from "lucide-react"
+import { Lightbulb, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
@@ -14,8 +14,9 @@ interface SidebarProps {
 }
 
 const MENU_ITEMS = [
-  { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Plataforma' },
-  { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Plataforma' },
+  { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Criar' },
+  { id: 'gostadas', label: 'Gostadas', icon: ThumbsUp, category: 'Salvo' },
+  { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Salvo' },
 ]
 
 export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin }: SidebarProps) {
@@ -114,33 +115,41 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
 
       {/* Navigation */}
       <div className="px-3 flex-1 overflow-y-auto custom-scrollbar">
-        <div className="mb-6">
-          <p className="text-[10px] font-bold text-gray-600 mb-2 px-3 tracking-widest uppercase">Plataforma</p>
-          <nav className="space-y-1">
-            {filteredItems.map(item => (
-              <button 
-                key={item.id}
-                onClick={
-                  item.id === 'gerador' ? onReset : 
-                  item.id === 'gostadas' ? onOpenGostadas : 
-                  onOpenFavorites
-                }
-                className={cn(
-                  "w-full flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium outline-none focus:outline-none focus:ring-0 ring-0 focus-visible:ring-0 select-none transition-colors",
-                  item.id === 'gerador' && !isResultsView 
-                    ? "bg-white/5 text-white border border-white/5 shadow-sm" 
-                    : "text-gray-500 hover:text-white hover:bg-white/[0.03]"
-                )}
-              >
-                <item.icon className={cn("w-4 h-4", item.id === 'gerador' && !isResultsView ? "text-white" : "text-gray-500")} />
-                <span>{item.label}</span>
-              </button>
-            ))}
-            {filteredItems.length === 0 && (
-              <p className="px-3 py-4 text-xs text-gray-600">Nada encontrado</p>
-            )}
-          </nav>
-        </div>
+        {['Criar', 'Salvo', 'Social'].map(category => {
+          const categoryItems = filteredItems.filter(item => item.category === category)
+
+          return (
+            <div key={category} className="mb-6">
+              <p className="text-[10px] font-bold text-gray-600 mb-2 px-3 tracking-widest uppercase">{category}</p>
+              <nav className="space-y-1">
+                {categoryItems.map(item => (
+                  <button 
+                    key={item.id}
+                    onClick={
+                      item.id === 'gerador' ? onReset : 
+                      item.id === 'gostadas' ? onOpenGostadas : 
+                      onOpenFavorites
+                    }
+                    className={cn(
+                      "w-full flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium outline-none transition-all group",
+                      item.id === 'gerador' && !isResultsView 
+                        ? "bg-white/[0.05] text-white" 
+                        : "text-gray-500 hover:text-white hover:bg-white/[0.03]"
+                    )}
+                  >
+                    <item.icon className={cn(
+                      "w-4 h-4 transition-colors text-gray-500 group-hover:text-white"
+                    )} />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          )
+        })}
+        {filteredItems.length === 0 && (
+          <p className="px-3 py-4 text-xs text-gray-600">Nada encontrado</p>
+        )}
       </div>
 
       {/* Footer / Actions */}
