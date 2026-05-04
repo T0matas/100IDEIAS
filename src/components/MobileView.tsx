@@ -5,8 +5,7 @@ import { GeneratorHeader } from "./GeneratorHeader"
 import { SkeletonGrid } from "./SkeletonGrid"
 import { IdeaSwiper } from "./IdeaSwiper"
 import { AnimatePresence, motion } from "framer-motion"
-import { Globe } from "lucide-react"
-import { cn } from "../lib/utils"
+
 import { LikedIdeasGrid } from "./LikedIdeasGrid"
 import { CommunityView } from "./CommunityView"
 
@@ -70,28 +69,7 @@ export function MobileView({
       />
       
       <main className="flex-1 flex flex-col pt-0 pb-10 overflow-y-auto overflow-x-hidden relative">
-        {/* Global Language Switcher Mobile */}
-        <div className="absolute top-4 right-6 z-[100]">
-          <div className="flex items-center gap-4">
-            <Globe className="w-3.5 h-3.5 text-white/30" />
-            <div className="flex items-center gap-3.5">
-              {["PT", "EN"].map((l) => (
-                <button
-                  key={l}
-                  className={cn(
-                    "text-[10px] font-black transition-all relative uppercase",
-                    l === "PT" ? "text-white" : "text-white/20"
-                  )}
-                >
-                  {l}
-                  {l === "PT" && (
-                    <div className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+
 
         <AnimatePresence mode="wait">
           {currentView === 'generator' ? (
@@ -195,6 +173,7 @@ export function MobileView({
         userEmail={userEmail}
         onOpenLogin={onOpenLogin}
         onOpenCommunity={onOpenCommunity}
+        currentView={currentView}
       />
 
       <LikedIdeasGrid 

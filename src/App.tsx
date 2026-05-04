@@ -9,36 +9,9 @@ import { AnimatePresence, motion } from "framer-motion"
 import { MobileView } from "./components/MobileView"
 import { LikedIdeasGrid } from "./components/LikedIdeasGrid"
 import { CommunityView } from "./components/CommunityView"
-import { Globe } from "lucide-react"
-import { cn } from "./lib/utils"
 
-const LanguageSwitcher = () => {
-  const [lang, setLang] = useState("EN")
-  return (
-    <div className="absolute top-4 right-6 z-[100]">
-      <div className="flex items-center gap-4">
-        <Globe className="w-3.5 h-3.5 text-white/30" />
-        <div className="flex items-center gap-3.5">
-          {["EN", "PT", "ES"].map((l) => (
-            <button
-              key={l}
-              onClick={() => setLang(l)}
-              className={cn(
-                "text-[10px] font-black transition-all relative uppercase",
-                l === lang ? "text-white" : "text-white/20"
-              )}
-            >
-              {l}
-              {l === lang && (
-                <div className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+
+
 
 function App() {
   const [hasGenerated, setHasGenerated] = useState(false)
@@ -101,6 +74,7 @@ function App() {
         onReset={() => {
           setHasGenerated(false);
           setSearchValue("");
+          setCurrentView('generator');
         }}
         usageCount={usageCount}
         onIncrementUsage={handleIncrementUsage}
@@ -129,7 +103,7 @@ function App() {
           currentView={currentView}
         />
         <main className="flex-1 ml-60 relative min-h-screen flex flex-col">
-          <LanguageSwitcher />
+
 
           {/* Generator / Community Section */}
           <AnimatePresence mode="wait">

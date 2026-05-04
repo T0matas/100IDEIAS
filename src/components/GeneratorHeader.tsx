@@ -131,13 +131,13 @@ export function GeneratorHeader({
   }
 
   return (
-    <div className="max-w-4xl pt-6 md:pt-16 pb-8 px-5 md:px-12 relative z-20">
+    <div className="max-w-4xl pt-2 md:pt-16 pb-8 px-5 md:px-12 relative z-20">
       <div className="w-8 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-[1.1] min-h-[70px] md:min-h-[90px]">
+      <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-[1.1] min-h-[60px] md:min-h-[90px]">
         O que você quer <br />
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
-      <p className="text-gray-400 mb-8 mt-2 text-sm max-w-xl">
+      <p className="text-gray-400 mb-6 md:mb-8 mt-1 md:mt-2 text-xs md:text-sm max-w-xl">
         Digite qualquer tema e nossa IA gerará 5 cards de ideias incríveis para você avaliar.
       </p>
 

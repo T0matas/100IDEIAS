@@ -50,12 +50,12 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-[#111111] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl"
+            className="relative w-full max-w-lg bg-[#111111] border border-white/10 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl"
           >
             {/* Header Gradient */}
-            <div className="h-32 bg-gradient-to-br from-white/10 to-transparent p-8 flex items-end">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-black shadow-xl">
-                <Lightbulb className="w-6 h-6" />
+            <div className="h-20 md:h-32 bg-gradient-to-br from-white/10 to-transparent p-5 md:p-8 flex items-end">
+              <div className="w-9 h-9 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-black shadow-xl">
+                <Lightbulb className="w-4.5 h-4.5 md:w-6 md:h-6" />
               </div>
             </div>
 
@@ -66,11 +66,11 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-8 pt-6">
-              <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">
+            <div className="p-5 md:p-8 pt-4 md:pt-6">
+              <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 tracking-tight">
                 {idea.title}
               </h2>
-              <p className="text-gray-400 mb-8 text-sm leading-relaxed">
+              <p className="text-gray-400 mb-5 md:mb-8 text-[11px] md:text-sm leading-relaxed">
                 {idea.description}
               </p>
 
@@ -84,11 +84,11 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                     className="space-y-6"
                   >
                     <div>
-                      <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <h4 className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3 md:mb-4 flex items-center gap-2">
                         <Target className="w-3 h-3" />
                         Componentes da Ideia
                       </h4>
-                      <ul className="space-y-4">
+                      <ul className="space-y-3 md:space-y-4">
                         {idea.details ? idea.details.map((detail: string, i: number) => (
                           <motion.li 
                             key={i}
@@ -100,12 +100,12 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                             <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
                               <span className="text-[10px] font-bold text-white">{i + 1}</span>
                             </div>
-                            <span className="text-sm text-gray-300 leading-relaxed">
+                            <span className="text-[10px] md:text-sm text-gray-300 leading-relaxed">
                               {detail}
                             </span>
                           </motion.li>
                         )) : (
-                          <p className="text-gray-500 text-xs italic">Nenhum detalhe disponível.</p>
+                          <p className="text-gray-500 text-[10px] md:text-xs italic">Nenhum detalhe disponível.</p>
                         )}
                       </ul>
                     </div>
@@ -114,7 +114,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       <Button3D 
                         onClick={handleGenerateRoadmap} 
                         color="white" 
-                        className="w-full py-4 rounded-2xl relative overflow-hidden group"
+                        className="w-full py-3 md:py-4 rounded-xl md:rounded-2xl relative overflow-hidden group"
                         disabled={isGenerating}
                       >
                         <AnimatePresence mode="wait">
@@ -157,10 +157,10 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                         </AnimatePresence>
                       </Button3D>
                       <button 
-                        className="flex items-center justify-center gap-2 text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors py-2 group"
+                        className="flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors py-1.5 md:py-2 group"
                         onClick={() => alert('Exportando One-Pager em PDF...')}
                       >
-                        <Download className="w-3 h-3 group-hover:-translate-y-0.5 transition-transform" />
+                        <Download className="w-2.5 h-2.5 md:w-3 h-3 group-hover:-translate-y-0.5 transition-transform" />
                         Exportar One-Pager
                       </button>
                     </div>
@@ -186,27 +186,27 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       </button>
                     </div>
 
-                    <div className="space-y-6 max-h-[350px] overflow-y-auto pr-3 custom-scrollbar relative">
+                    <div className="space-y-6 max-h-[280px] md:max-h-[350px] overflow-y-auto pr-3 custom-scrollbar relative">
                       {/* Timeline Line */}
                       <div className="absolute left-[26px] top-6 bottom-6 w-px bg-gradient-to-b from-white/20 via-white/10 to-transparent pointer-events-none" />
 
                       {roadmapData.map((week, i) => (
-                        <div key={i} className="relative pl-12">
+                        <div key={i} className="relative pl-10 md:pl-12">
                           {/* Dot */}
-                          <div className="absolute left-[21px] top-2 w-2.5 h-2.5 rounded-full bg-white border-[3px] border-[#111111] z-10 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+                          <div className="absolute left-[21px] top-2 w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-white border-[2px] md:border-[3px] border-[#111111] z-10 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
                           
-                          <div className="bg-white/[0.03] border border-white/5 rounded-[2rem] p-5 hover:bg-white/[0.05] transition-colors group">
-                            <div className="flex items-center justify-between mb-4">
+                          <div className="bg-white/[0.03] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-5 hover:bg-white/[0.05] transition-colors group">
+                            <div className="flex items-center justify-between mb-3 md:mb-4">
                               <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-black bg-white px-2 py-0.5 rounded uppercase">Sem {week.week}</span>
-                                <span className="text-sm font-bold text-white tracking-tight">{week.title}</span>
+                                <span className="text-[9px] md:text-[10px] font-black text-black bg-white px-1.5 md:px-2 py-0.5 rounded uppercase">Sem {week.week}</span>
+                                <span className="text-xs md:text-sm font-bold text-white tracking-tight">{week.title}</span>
                               </div>
                               <CheckCircle2 className="w-4 h-4 text-white/10 group-hover:text-white/30 transition-colors" />
                             </div>
-                            <ul className="space-y-2.5">
+                            <ul className="space-y-1.5 md:space-y-2.5">
                               {week.tasks.map((task, j) => (
-                                <li key={j} className="flex items-start gap-2 text-xs text-gray-400 leading-relaxed">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white/20 mt-1 shrink-0" />
+                                <li key={j} className="flex items-start gap-2 text-[10px] md:text-xs text-gray-400 leading-relaxed">
+                                  <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-white/20 mt-1.5 md:mt-1 shrink-0" />
                                   {task}
                                 </li>
                               ))}
@@ -220,7 +220,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       <Button3D 
                         onClick={onClose} 
                         color="white" 
-                        className="w-full py-4 rounded-2xl shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+                        className="w-full py-3 md:py-4 rounded-xl md:rounded-2xl shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
                       >
                         <span className="font-bold flex items-center gap-2">
                           Começar Jornada <ChevronRight className="w-4 h-4" />

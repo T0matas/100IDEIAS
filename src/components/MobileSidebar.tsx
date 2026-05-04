@@ -28,6 +28,7 @@ interface MobileSidebarProps {
   userEmail?: string
   onOpenLogin: () => void
   onOpenCommunity: () => void
+  currentView: 'generator' | 'community'
 }
 
 const MENU_ITEMS = [
@@ -47,7 +48,8 @@ export function MobileSidebar({
   isLoggedIn,
   userEmail,
   onOpenLogin,
-  onOpenCommunity
+  onOpenCommunity,
+  currentView
 }: MobileSidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -177,14 +179,14 @@ export function MobileSidebar({
                           }}
                           className={cn(
                             "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium outline-none",
-                            item.id === 'gerador' && !isResultsView 
+                            (item.id === 'gerador' && currentView === 'generator' && !isResultsView) || (item.id === 'comunidade' && currentView === 'community')
                               ? "bg-white/[0.05] text-white shadow-inner" 
                               : "text-gray-500 hover:text-white hover:bg-white/[0.03]"
                           )}
                         >
                           <item.icon className={cn(
                             "w-4.5 h-4.5 transition-colors",
-                            item.id === 'gerador' && !isResultsView ? "text-white" : "text-gray-500"
+                            (item.id === 'gerador' && currentView === 'generator' && !isResultsView) || (item.id === 'comunidade' && currentView === 'community') ? "text-white" : "text-gray-500"
                           )} />
                           <span>{item.label}</span>
                         </button>

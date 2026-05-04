@@ -128,15 +128,15 @@ function SwipeCard({
       dragElastic={0.7}
       onDragEnd={isFront && !isEditing ? handleDragEnd : undefined}
       className={cn(
-        "absolute w-full h-[380px] p-8 bg-[#1A1A1A] border border-white/10 rounded-[2.5rem] shadow-2xl origin-bottom flex flex-col justify-center",
+        "absolute w-full h-[330px] md:h-[380px] p-5 md:p-8 bg-[#1A1A1A] border border-white/10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl origin-bottom flex flex-col justify-center",
         isFront && !isEditing ? "cursor-grab active:cursor-grabbing" : "",
         !isFront && "pointer-events-none"
       )}
       initial={{ scale: 0.9, opacity: 0, y: 20 }}
       animate={{ 
-        scale: isFront ? 1 : 1 - (index * 0.04), 
+        scale: isFront ? 1 : 1 - (index * 0.05), 
         opacity: isFront ? 1 : 0.4, 
-        y: isFront ? 0 : index * 12,
+        y: isFront ? 0 : index * 8,
         zIndex: 100 - index
       }}
       exit={{ 
@@ -161,13 +161,13 @@ function SwipeCard({
       >
         Passo
       </motion.div>
-      <div className="flex flex-col h-full pointer-events-none select-none relative z-0">
+      <div className={cn("flex flex-col h-full pointer-events-none select-none relative z-0 transition-opacity duration-200", !isFront && "opacity-0")}>
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black shadow-lg">
-              <Lightbulb className="w-4.5 h-4.5" />
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center text-black shadow-lg">
+              <Lightbulb className="w-3.5 h-3.5 md:w-4.5 md:h-4.5" />
             </div>
-            <span className="text-sm font-bold text-white tracking-tight">
+            <span className="text-xs md:text-sm font-bold text-white tracking-tight">
               100<span className="text-gray-500">ideias</span>
             </span>
           </div>
@@ -275,10 +275,10 @@ function SwipeCard({
                 }
               }}
             >
-              <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
+              <h3 className="mb-2 md:mb-4 text-xl md:text-3xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
                 {idea.title}
               </h3>
-              <p className="text-gray-400 text-lg leading-relaxed max-w-[90%] group-hover:text-gray-300 transition-colors">
+              <p className="text-gray-400 text-[11px] md:text-lg leading-relaxed max-w-[95%] group-hover:text-gray-300 transition-colors">
                 {idea.description}
               </p>
             </div>
@@ -437,20 +437,20 @@ export function IdeaSwiper({
       </div>
 
       {ideas.length > 0 && (
-        <div className="flex items-center space-x-8 self-center">
+        <div className="flex items-center space-x-6 md:space-x-8 self-center">
           <button 
             onClick={() => forceSwipe('left')}
-            className="flex items-center justify-center w-20 h-20 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
             title="Não gostei"
           >
-            <ThumbsDown className="w-10 h-10" />
+            <ThumbsDown className="w-8 h-8 md:w-10 md:h-10" />
           </button>
           <button 
             onClick={() => forceSwipe('right')}
-            className="flex items-center justify-center w-20 h-20 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
             title="Gostei"
           >
-            <ThumbsUp className="w-10 h-10" />
+            <ThumbsUp className="w-8 h-8 md:w-10 md:h-10" />
           </button>
         </div>
       )}
