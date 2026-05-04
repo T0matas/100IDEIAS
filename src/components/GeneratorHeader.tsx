@@ -142,7 +142,7 @@ export function GeneratorHeader({
       </p>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-2xl mt-6">
-        <div className="flex-1 relative flex items-center shadow-[0_4px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_4px_0_rgb(25,25,25)] overflow-hidden">
+        <div className="flex-1 relative flex items-center shadow-[0_6px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_6px_0_rgb(25,25,25)] overflow-hidden h-[52px] sm:h-[48px]">
           <input
             type="text"
             value={value}
@@ -154,7 +154,7 @@ export function GeneratorHeader({
               if (e.key === 'Enter') handleGenerateClick();
             }}
             placeholder="Ex: negócios sustentáveis..."
-            className="w-full bg-transparent pl-5 md:pl-6 pr-[105px] py-4 text-sm md:text-base text-white placeholder-gray-600 outline-none"
+            className="w-full bg-transparent pl-5 md:pl-6 pr-[105px] py-0 text-sm md:text-base text-white placeholder-gray-600 outline-none h-full"
           />
           <button
             onClick={handleSurprise}
@@ -171,7 +171,7 @@ export function GeneratorHeader({
         <Button3D
           onClick={handleGenerateClick}
           color="white"
-          className="px-8 py-3 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
+          className="px-8 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
         >
           <span className="font-bold text-sm">Gerar Ideias</span>
           <Send className={cn(
