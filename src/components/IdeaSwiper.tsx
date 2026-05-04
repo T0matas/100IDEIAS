@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Lightbulb, Bookmark, Search, Edit2, Check, X, RefreshCw, ThumbsUp, ThumbsDown, ChevronRight, Copy } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -320,12 +320,22 @@ export function IdeaSwiper({
   setLikedIdeas, 
   favoriteIdeas,
   setFavoriteIdeas,
+  aiIdeas,
   onReset,
   onIncrementUsage
 }: any) {
-  const [ideas, setIdeas] = useState(INITIAL_IDEAS);
+  const [ideas, setIdeas] = useState<any[]>(() => 
+    (aiIdeas && aiIdeas.length > 0 ? aiIdeas : INITIAL_IDEAS).map((idea: any) => ({ ...idea, id: idea.id + Math.floor(Math.random() * 1000000) }))
+  );
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
+
+  // Sync ideas when aiIdeas changes
+  useEffect(() => {
+    if (aiIdeas && aiIdeas.length > 0) {
+      setIdeas(aiIdeas.map((idea: any) => ({ ...idea, id: idea.id + Math.floor(Math.random() * 1000000) })));
+    }
+  }, [aiIdeas]);
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     if (direction === 'right') {
@@ -333,6 +343,7 @@ export function IdeaSwiper({
       if (idea) {
         setLikedIdeas((prev: any) => {
           if (!prev.some((p: any) => p.id === idea.id)) {
+            if (prev.length >= 100) return prev;
             return [...prev, idea];
           }
           return prev;
@@ -349,8 +360,7 @@ export function IdeaSwiper({
       return; // blocked by usage limit
     }
     setReloadKey(prev => prev + 1);
-    setIdeas(INITIAL_IDEAS);
-    setLikedIdeas([]);
+    setIdeas(() => INITIAL_IDEAS.map(idea => ({ ...idea, id: idea.id + Math.floor(Math.random() * 1000000) })));
   };
 
   const handleUpdateIdea = (id: number, updates: any) => {
@@ -365,6 +375,7 @@ export function IdeaSwiper({
       if (isAlreadyFav) {
         return prev.filter((p: any) => p.id !== idea.id);
       } else {
+        if (prev.length >= 100) return prev;
         return [...prev, idea];
       }
     });
@@ -422,11 +433,11 @@ export function IdeaSwiper({
                 Você curtiu {likedIdeas.length} de {INITIAL_IDEAS.length} ideias.
               </p>
               <div className="w-full space-y-3">
-                <Button3D onClick={handleReload} color="white" className="px-8 py-3.5 w-full">
+                <Button3D onClick={handleReload} color="white" className="px-8 h-[52px] sm:h-[48px] w-full">
                   <RefreshCw className="w-5 h-5 mr-2" />
                   <span>Gerar Mais (Mesmo Tema)</span>
                 </Button3D>
-                <Button3D onClick={onReset} color="gray" className="px-8 py-3.5 w-full">
+                <Button3D onClick={onReset} color="gray" className="px-8 h-[52px] sm:h-[48px] w-full">
                   <Search className="w-5 h-5 mr-2" />
                   <span>Nova Pesquisa (Limpar Tudo)</span>
                 </Button3D>

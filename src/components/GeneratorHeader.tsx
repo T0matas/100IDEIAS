@@ -54,18 +54,18 @@ function TypewriterText() {
 
 export function GeneratorHeader({
   onGenerate,
-  isGenerating,
   externalValue,
   onValueChange,
   usageCount,
+  isPremium,
   isUpgradeModalOpen,
   setIsUpgradeModalOpen
 }: {
-  onGenerate: () => void,
-  isGenerating?: boolean,
+  onGenerate: (ideas?: any[]) => void,
   externalValue?: string,
   onValueChange?: (val: string) => void,
   usageCount: number,
+  isPremium?: boolean,
   isUpgradeModalOpen: boolean,
   setIsUpgradeModalOpen: (open: boolean) => void
 }) {
@@ -82,6 +82,7 @@ export function GeneratorHeader({
   const [warningType, setWarningType] = useState<'blocked' | 'empty' | null>(null)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isFlying, setIsFlying] = useState(false)
+  const [isCooldown, setIsCooldown] = useState(false)
 
   const handleRemoveRecent = (term: string) => {
     setRecentSearches(prev => prev.filter(t => t !== term))
@@ -100,6 +101,10 @@ export function GeneratorHeader({
 
   const handleUpgrade = () => {
     setIsProcessingPayment(true);
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      setIsUpgradeModalOpen(false);
+    }, 1500);
   }
 
   const handleGenerateClick = () => {
@@ -109,9 +114,9 @@ export function GeneratorHeader({
       return;
     }
 
-    if (isGenerating) {
+    if (isCooldown) {
       setWarningType('blocked');
-      setTimeout(() => setWarningType(null), 3000);
+      setTimeout(() => setWarningType(null), 1500);
       return;
     }
 
@@ -121,13 +126,18 @@ export function GeneratorHeader({
     }
 
     setIsFlying(true);
-    setTimeout(() => setIsFlying(false), 600);
+    setIsCooldown(true);
+
+    setTimeout(() => {
+      setIsFlying(false);
+      setIsCooldown(false);
+    }, 1000);
 
     if (!recentSearches.includes(value.trim())) {
       setRecentSearches((prev: string[]) => [value.trim(), ...prev].slice(0, 4))
     }
 
-    onGenerate()
+    onGenerate();
   }
 
   return (
@@ -170,6 +180,7 @@ export function GeneratorHeader({
         </div>
         <Button3D
           onClick={handleGenerateClick}
+          onMouseUp={(e) => e.currentTarget.blur()}
           color="white"
           className="px-8 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
         >
@@ -186,16 +197,19 @@ export function GeneratorHeader({
           <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${Math.min((usageCount / 5) * 100, 100)}%` }}
+              animate={{ width: isPremium ? '100%' : `${Math.min((usageCount / 5) * 100, 100)}%` }}
               className={cn(
                 "h-full transition-all duration-700 ease-out",
-                usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" :
-                  usageCount >= 3 ? "bg-amber-500" : "bg-white/30"
+                isPremium ? "bg-white/80 shadow-[0_0_10px_rgba(255,255,255,0.3)]" :
+                  usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" :
+                    usageCount >= 3 ? "bg-amber-500" : "bg-white/30"
               )}
             />
           </div>
           <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">
-            {usageCount}/5 <span className="hidden xs:inline">gerações grátis</span>
+            {isPremium ? "Acesso Ilimitado" : (
+              <>{usageCount}/5 <span className="hidden xs:inline">gerações grátis</span></>
+            )}
           </span>
         </div>
       )}
@@ -283,7 +297,7 @@ export function GeneratorHeader({
                 <Button3D
                   onClick={handleUpgrade}
                   color="white"
-                  className="w-full py-4 rounded-2xl group overflow-hidden mb-6 h-14"
+                  className="w-full rounded-2xl group overflow-hidden mb-6 h-[52px] sm:h-[48px]"
                   disabled={isProcessingPayment}
                 >
                   <span className="font-bold text-base">

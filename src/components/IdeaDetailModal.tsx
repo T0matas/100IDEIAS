@@ -25,7 +25,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
     setTimeout(() => {
       setIsGenerating(false)
       setView('roadmap')
-    }, 2000)
+    }, 1000)
   }
 
   const roadmapData = [
@@ -114,7 +114,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       <Button3D 
                         onClick={handleGenerateRoadmap} 
                         color="white" 
-                        className="w-full py-3 md:py-4 rounded-xl md:rounded-2xl relative overflow-hidden group"
+                        className="w-full h-[52px] sm:h-[48px] rounded-xl md:rounded-2xl relative overflow-hidden group"
                         disabled={isGenerating}
                       >
                         <AnimatePresence mode="wait">
@@ -220,7 +220,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       <Button3D 
                         onClick={onClose} 
                         color="white" 
-                        className="w-full py-3 md:py-4 rounded-xl md:rounded-2xl shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+                        className="w-full h-[52px] sm:h-[48px] rounded-xl md:rounded-2xl"
                       >
                         <span className="font-bold flex items-center gap-2">
                           Começar Jornada <ChevronRight className="w-4 h-4" />

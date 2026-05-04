@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Send, Users, MessageSquare, ThumbsUp, Lightbulb } from "lucide-react"
+import { Send, Users, Lightbulb, ThumbsUp, MessageSquare, Pencil, Trash2, Check, X } from "lucide-react"
 import { cn } from "../lib/utils"
 import { Button3D } from "./ui/Button3D"
+import { API_URL } from "../config"
 
 interface CommunityViewProps {
   isLoggedIn: boolean
@@ -11,10 +12,10 @@ interface CommunityViewProps {
 }
 
 interface CommunityPost {
-  id: number
-  userName: string
-  userInitials: string
-  timeAgo: string
+  id: string
+  userId: string
+  authorName: string
+  createdAt: string
   category: string
   title: string
   description: string
@@ -25,83 +26,145 @@ interface CommunityPost {
   matchTag?: string | null
 }
 
-const INITIAL_POSTS: CommunityPost[] = []
+const API = `${API_URL}/api`
 
 export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewProps) {
-  const [posts, setPosts] = useState<CommunityPost[]>(INITIAL_POSTS)
+  const [posts, setPosts] = useState<CommunityPost[]>([])
+  const [_isLoading, setIsLoading] = useState(true)
   const [newPost, setNewPost] = useState("")
   const [postTitle, setPostTitle] = useState("")
   const [error, setError] = useState("")
-  const [activeCommentPost, setActiveCommentPost] = useState<number | null>(null)
+  const [_isPublishing, setIsPublishing] = useState(false)
+  const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
   const [commentValue, setCommentValue] = useState("")
   const [selectedMatchTag, setSelectedMatchTag] = useState<string | null>(null)
+  const [editingPostId, setEditingPostId] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState("")
+  const [editDescription, setEditDescription] = useState("")
+
+  const currentUserId = (() => {
+    try { return JSON.parse(localStorage.getItem("user") || "{}").id } catch { return null }
+  })()
 
   const matchTags = ["Busco Dev", "Busco Designer", "Busco Co-founder", "Busco Marketing"]
 
-  const handlePublish = () => {
+  const formatDate = (iso: string) => {
+    const d = new Date(iso)
+    const now = new Date()
+    const diff = Math.floor((now.getTime() - d.getTime()) / 1000)
+    if (diff < 60) return "Agora mesmo"
+    if (diff < 3600) return `${Math.floor(diff/60)}min atrás`
+    if (diff < 86400) return `${Math.floor(diff/3600)}h atrás`
+    return `${Math.floor(diff/86400)}d atrás`
+  }
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(`${API}/community`)
+        if (res.ok) {
+          const data = await res.json()
+          setPosts(data.map((p: any) => ({ ...p, isLiked: false, commentList: [] })))
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchPosts()
+  }, [])
+
+  const handlePublish = async () => {
     if (!postTitle.trim() || !newPost.trim()) {
       setError("Por favor, preencha o título e a descrição da sua ideia.")
       return
     }
-    
     setError("")
-    const newPostObj: CommunityPost = {
-      id: Date.now(),
-      userName: userEmail ? userEmail.split('@')[0] : "Empreendedor",
-      userInitials: userEmail ? userEmail.substring(0, 2).toUpperCase() : "EE",
-      timeAgo: "Agora mesmo",
-      category: "Nova Ideia",
-      title: postTitle,
-      description: newPost,
-      likes: 0,
-      comments: 0,
-      isLiked: false,
-      commentList: [],
-      matchTag: selectedMatchTag
-    }
-
-    setPosts([newPostObj, ...posts])
-    setNewPost("")
-    setPostTitle("")
-    setSelectedMatchTag(null)
-  }
-
-  const handleLike = (postId: number) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        const isLiked = !post.isLiked
-        return {
-          ...post,
-          isLiked,
-          likes: isLiked ? post.likes + 1 : post.likes - 1
-        }
+    setIsPublishing(true)
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: postTitle, description: newPost, category: "Nova Ideia", tags: selectedMatchTag ? [selectedMatchTag] : [] })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setPosts(prev => [{ ...data, isLiked: false, commentList: [], comments: 0, matchTag: selectedMatchTag }, ...prev])
+        setNewPost("")
+        setPostTitle("")
+        setSelectedMatchTag(null)
+      } else {
+        const data = await res.json()
+        setError(data.error || "Erro ao publicar.")
       }
-      return post
-    }))
+    } catch (e) {
+      setError("Erro de conexão com o servidor.")
+    } finally {
+      setIsPublishing(false)
+    }
   }
 
-  const handleAddComment = (postId: number) => {
+  const handleLike = async (postId: string) => {
+    if (!isLoggedIn) { onLogin(); return }
+    try {
+      const token = localStorage.getItem("token")
+      const post = posts.find(p => p.id === postId)
+      if (!post) return
+      if (!post.isLiked) {
+        await fetch(`${API}/community/${postId}/like`, { method: "POST", headers: { Authorization: `Bearer ${token}` } })
+      }
+      setPosts(prev => prev.map(p => p.id === postId ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 } : p))
+    } catch (e) { console.error(e) }
+  }
+
+  const handleAddComment = (postId: string) => {
     if (!commentValue.trim()) return
-    
     const commentUser = userEmail ? userEmail.split('@')[0] : "Empreendedor"
     const commentInitials = userEmail ? userEmail.substring(0, 2).toUpperCase() : "EE"
-
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: post.comments + 1,
-          commentList: [...(post.commentList || []), { 
-            text: commentValue, 
-            userName: commentUser, 
-            userInitials: commentInitials 
-          }]
-        }
-      }
-      return post
-    }))
+    setPosts(prev => prev.map(post => post.id === postId ? {
+      ...post,
+      comments: post.comments + 1,
+      commentList: [...(post.commentList || []), { text: commentValue, userName: commentUser, userInitials: commentInitials }]
+    } : post))
     setCommentValue("")
   }
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm("Tens a certeza que queres eliminar esta ideia?")) return
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/${postId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) setPosts(prev => prev.filter(p => p.id !== postId))
+    } catch (e) { console.error(e) }
+  }
+
+  const handleStartEdit = (post: CommunityPost) => {
+    setEditingPostId(post.id)
+    setEditTitle(post.title)
+    setEditDescription(post.description)
+  }
+
+  const handleSaveEdit = async (postId: string) => {
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: editTitle, description: editDescription })
+      })
+      if (res.ok) {
+        setPosts(prev => prev.map(p => p.id === postId ? { ...p, title: editTitle, description: editDescription } : p))
+        setEditingPostId(null)
+      }
+    } catch (e) { console.error(e) }
+  }
+
 
   return (
     <div className="max-w-4xl pt-6 md:pt-16 pb-24 px-5 md:px-12 w-full">
@@ -178,7 +241,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
             <Button3D
               onClick={handlePublish}
               color="white"
-              className="px-8 py-3 rounded-2xl h-12 w-full md:w-auto"
+              className="px-8 rounded-2xl h-[52px] sm:h-[48px] w-full md:w-auto"
             >
               <Send className="w-4 h-4 mr-2" />
               <span className="font-bold text-sm">Publicar</span>
@@ -193,7 +256,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
               <p className="text-gray-400 text-sm mb-6 leading-relaxed">
                 Você precisa estar logado para compartilhar suas ideias com a comunidade.
               </p>
-              <Button3D onClick={onLogin} color="white" className="w-full py-3 rounded-xl">
+              <Button3D onClick={onLogin} color="white" className="w-full h-[52px] sm:h-[48px] rounded-xl">
                 <span className="font-bold text-sm">Fazer Log in</span>
               </Button3D>
             </div>
@@ -203,13 +266,6 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
 
       {/* Stats */}
       <div className="flex items-center gap-6 mb-10 px-1">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <Users className="w-4 h-4" />
-          <span className="font-bold">{isLoggedIn ? 1 : 0}</span>
-          <span className="text-gray-600 font-medium">
-            {isLoggedIn && 1 === 1 ? "membro" : "membros"}
-          </span>
-        </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <Lightbulb className="w-4 h-4" />
           <span className="font-bold">{posts.length}</span>
@@ -236,25 +292,83 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
               <div className="flex items-start justify-between mb-8">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-white shadow-inner">
-                    {post.userInitials}
+                    {post.authorName.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="text-base font-bold text-white leading-none mb-1.5">{post.userName}</h4>
-                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{post.timeAgo}</p>
+                    <h4 className="text-base font-bold text-white leading-none mb-1.5">{post.authorName}</h4>
+                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{formatDate(post.createdAt)}</p>
                   </div>
                 </div>
-                <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white uppercase tracking-[0.15em]">
-                  {post.category}
+                <div className="flex items-center gap-2">
+                  {post.userId === currentUserId && editingPostId !== post.id && (
+                    <>
+                      <button
+                        onClick={() => handleStartEdit(post)}
+                        className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+                        title="Editar"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(post.id)}
+                        className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
+                  {editingPostId === post.id && (
+                    <>
+                      <button
+                        onClick={() => handleSaveEdit(post.id)}
+                        className="w-8 h-8 flex items-center justify-center rounded-xl bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-all"
+                        title="Guardar"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setEditingPostId(null)}
+                        className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 text-gray-500 hover:text-white transition-all"
+                        title="Cancelar"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
+                  {editingPostId !== post.id && (
+                    <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white uppercase tracking-[0.15em]">
+                      {post.category}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="mb-6">
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-white/90 transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-gray-400 text-base md:text-lg leading-relaxed group-hover:text-gray-300 transition-colors">
-                  {post.description}
-                </p>
+                {editingPostId === post.id ? (
+                  <div className="space-y-3">
+                    <input
+                      value={editTitle}
+                      onChange={e => setEditTitle(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xl font-bold outline-none focus:border-white/20 transition-all"
+                    />
+                    <textarea
+                      value={editDescription}
+                      onChange={e => setEditDescription(e.target.value)}
+                      rows={3}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-gray-300 outline-none focus:border-white/20 transition-all resize-none"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-white/90 transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-400 text-base md:text-lg leading-relaxed group-hover:text-gray-300 transition-colors">
+                      {post.description}
+                    </p>
+                  </>
+                )}
                 
                 {post.matchTag && (
                   <div className="mt-4 flex items-center gap-2">

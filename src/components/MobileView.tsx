@@ -29,11 +29,13 @@ interface MobileViewProps {
   onOpenLogin: () => void
   usageCount: number
   onIncrementUsage: () => boolean
-  onGenerate: () => void
+  onGenerate: (ideas?: any[]) => void
   isUpgradeModalOpen: boolean
   setIsUpgradeModalOpen: (val: boolean) => void
   currentView: 'generator' | 'community'
   onOpenCommunity: () => void
+  isPremium?: boolean
+  aiIdeas: any[] | null
 }
 
 export function MobileView({
@@ -58,7 +60,9 @@ export function MobileView({
   isUpgradeModalOpen,
   setIsUpgradeModalOpen,
   currentView,
-  onOpenCommunity
+  onOpenCommunity,
+  isPremium,
+  aiIdeas
 }: MobileViewProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -85,10 +89,10 @@ export function MobileView({
               <section className="mb-4">
                 <GeneratorHeader 
                   onGenerate={onGenerate}
-                  isGenerating={hasGenerated}
                   externalValue={searchValue}
                   onValueChange={setSearchValue}
                   usageCount={usageCount}
+                  isPremium={isPremium}
                   isUpgradeModalOpen={isUpgradeModalOpen}
                   setIsUpgradeModalOpen={setIsUpgradeModalOpen}
                 />
@@ -123,7 +127,11 @@ export function MobileView({
                           setLikedIdeas={setLikedIdeas} 
                           favoriteIdeas={favoriteIdeas}
                           setFavoriteIdeas={setFavoriteIdeas}
-                          onReset={onReset}
+                          aiIdeas={aiIdeas}
+                          onReset={() => {
+                            _setHasGenerated(false);
+                            setSearchValue("");
+                          }}
                           onIncrementUsage={onIncrementUsage}
                         />
                       </motion.div>
@@ -185,6 +193,7 @@ export function MobileView({
           setFavoriteIdeas((prev: any[]) => {
             const isAlreadyFav = prev.some((p: any) => p.id === idea.id);
             if (isAlreadyFav) return prev.filter((p: any) => p.id !== idea.id);
+            if (prev.length >= 100) return prev;
             return [...prev, idea];
           });
         }}

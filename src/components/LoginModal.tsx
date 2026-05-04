@@ -2,6 +2,8 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Lightbulb } from "lucide-react"
 import { cn } from "../lib/utils"
+import { Button3D } from "./ui/Button3D"
+import { API_URL } from "../config"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -77,10 +79,34 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
     }
 
     setIsLoading(true)
-    await new Promise(r => setTimeout(r, 1400))
-    setIsLoading(false)
-    onLogin(email)
-    onClose()
+    try {
+      const endpoint = view === 'login' ? '/api/auth/login' : '/api/auth/register';
+      const body = view === 'login' ? { email, password } : { email, password, name };
+      
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Ocorreu um erro.');
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      onLogin(data.user.email);
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError('Erro de conexão com o servidor.');
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const switchView = (next: View) => {
@@ -260,12 +286,11 @@ function FormPanel({
           </div>
         )}
 
-        <motion.button
+        <Button3D
           type="submit"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-semibold text-sm bg-white text-black hover:bg-gray-50 transition-all shadow-[0_4px_0_rgba(255,255,255,0.15)] disabled:opacity-50"
+          color="white"
+          className="w-full flex items-center justify-center gap-2.5 h-[52px] sm:h-[48px] rounded-2xl font-semibold text-sm disabled:opacity-50"
         >
           <AnimatePresence mode="wait">
             {isLoading ? (
@@ -279,7 +304,7 @@ function FormPanel({
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.button>
+        </Button3D>
       </form>
 
       <p className="text-center text-xs text-gray-600 mt-5">
