@@ -1,0 +1,1 @@
+localStorage.setItem(" idea_usage_count\, \0\); localStorage.removeItem(\idea_plan\); location.reload();

@@ -17,6 +17,11 @@
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
   }
+
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {

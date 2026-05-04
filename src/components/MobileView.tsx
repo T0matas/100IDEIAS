@@ -5,13 +5,18 @@ import { GeneratorHeader } from "./GeneratorHeader"
 import { SkeletonGrid } from "./SkeletonGrid"
 import { IdeaSwiper } from "./IdeaSwiper"
 import { AnimatePresence, motion } from "framer-motion"
+import { LikedIdeasGrid } from "./LikedIdeasGrid"
 
 
 interface MobileViewProps {
   hasGenerated: boolean
   setHasGenerated: (val: boolean) => void
   likedIdeas: any[]
-  setLikedIdeas: (val: any[]) => void
+  setLikedIdeas: React.Dispatch<React.SetStateAction<any[]>>
+  favoriteIdeas: any[]
+  setFavoriteIdeas: React.Dispatch<React.SetStateAction<any[]>>
+  isGostadasOpen: boolean
+  setIsGostadasOpen: (val: boolean) => void
   isFavoritesOpen: boolean
   setIsFavoritesOpen: (val: boolean) => void
   searchValue: string
@@ -20,26 +25,43 @@ interface MobileViewProps {
   isLoggedIn: boolean
   userEmail?: string
   onOpenLogin: () => void
+  usageCount: number
+  onIncrementUsage: () => boolean
+  onGenerate: () => void
+  isUpgradeModalOpen: boolean
+  setIsUpgradeModalOpen: (val: boolean) => void
 }
 
 export function MobileView({
   hasGenerated,
-  setHasGenerated,
+  setHasGenerated: _setHasGenerated,
   likedIdeas,
   setLikedIdeas,
+  favoriteIdeas,
+  setFavoriteIdeas,
+  isGostadasOpen,
+  setIsGostadasOpen,
   setIsFavoritesOpen,
   searchValue,
   setSearchValue,
   onReset,
   isLoggedIn,
   userEmail,
-  onOpenLogin
+  onOpenLogin,
+  usageCount,
+  onIncrementUsage,
+  onGenerate,
+  isUpgradeModalOpen,
+  setIsUpgradeModalOpen
 }: MobileViewProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0A0A0A] md:hidden">
-      <MobileHeader onMenuClick={() => setIsSidebarOpen(true)} />
+      <MobileHeader 
+        onMenuClick={() => setIsSidebarOpen(true)} 
+        onFavoritesClick={() => setIsGostadasOpen(true)}
+      />
       
       <main className="flex-1 flex flex-col pt-4 pb-10 overflow-y-auto overflow-x-hidden">
         {/* Generator Section */}
@@ -51,10 +73,13 @@ export function MobileView({
           <div className="bg-[#121212] border border-white/5 rounded-[2rem] p-5 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
             <GeneratorHeader 
-              onGenerate={() => setHasGenerated(true)} 
+              onGenerate={onGenerate}
               isGenerating={hasGenerated}
               externalValue={searchValue}
               onValueChange={setSearchValue}
+              usageCount={usageCount}
+              isUpgradeModalOpen={isUpgradeModalOpen}
+              setIsUpgradeModalOpen={setIsUpgradeModalOpen}
             />
           </div>
         </section>
@@ -86,7 +111,10 @@ export function MobileView({
                   <IdeaSwiper 
                     likedIdeas={likedIdeas} 
                     setLikedIdeas={setLikedIdeas} 
+                    favoriteIdeas={favoriteIdeas}
+                    setFavoriteIdeas={setFavoriteIdeas}
                     onReset={onReset}
+                    onIncrementUsage={onIncrementUsage}
                   />
                 </motion.div>
               ) : (
@@ -109,12 +137,28 @@ export function MobileView({
       <MobileSidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
+        onOpenGostadas={() => setIsGostadasOpen(true)}
         onOpenFavorites={() => setIsFavoritesOpen(true)}
         onReset={onReset}
         isResultsView={hasGenerated}
         isLoggedIn={isLoggedIn}
         userEmail={userEmail}
         onOpenLogin={onOpenLogin}
+      />
+
+      <LikedIdeasGrid 
+        isOpen={isGostadasOpen} 
+        onClose={() => setIsGostadasOpen(false)} 
+        likedIdeas={likedIdeas} 
+        onRemoveLiked={(id: number) => setLikedIdeas(prev => prev.filter(idea => idea.id !== id))}
+        onToggleFavorite={(idea: any) => {
+          setFavoriteIdeas((prev: any[]) => {
+            const isAlreadyFav = prev.some((p: any) => p.id === idea.id);
+            if (isAlreadyFav) return prev.filter((p: any) => p.id !== idea.id);
+            return [...prev, idea];
+          });
+        }}
+        favoriteIdeas={favoriteIdeas}
       />
     </div>
   )

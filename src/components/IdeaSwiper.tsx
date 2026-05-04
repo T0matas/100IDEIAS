@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { Lightbulb, ThumbsUp, ThumbsDown, RefreshCw, Bookmark, Search } from 'lucide-react';
+import { Lightbulb, Bookmark, Search, Edit2, Check, X, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button3D } from './ui/Button3D';
 
@@ -12,7 +12,29 @@ const INITIAL_IDEAS = [
   { id: 5, title: 'Marketplace de Assinaturas Compartilhadas', description: 'Sistema seguro para dividir custos de streaming e softwares de forma automatizada.' },
 ];
 
-function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any) {
+function SwipeCard({ 
+  idea, 
+  onSwipe, 
+  isFront, 
+  index, 
+  isFavorite,
+  onToggleFavorite,
+  onUpdateIdea 
+}: any) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(idea.title);
+  const [editedDescription, setEditedDescription] = useState(idea.description);
+
+  const handleSave = () => {
+    onUpdateIdea(idea.id, { title: editedTitle, description: editedDescription });
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditedTitle(idea.title);
+    setEditedDescription(idea.description);
+    setIsEditing(false);
+  };
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   
@@ -34,13 +56,14 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
   return (
     <motion.div
       style={{ x, rotate }}
-      drag={isFront ? "x" : false}
+      drag={isFront && !isEditing ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
-      onDragEnd={isFront ? handleDragEnd : undefined}
+      onDragEnd={isFront && !isEditing ? handleDragEnd : undefined}
       className={cn(
         "absolute w-full h-[380px] p-8 bg-[#1A1A1A] border border-white/10 rounded-[2.5rem] shadow-2xl origin-bottom flex flex-col justify-center",
-        isFront ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
+        isFront && !isEditing ? "cursor-grab active:cursor-grabbing" : "",
+        !isFront && "pointer-events-none"
       )}
       initial={{ scale: 0.9, opacity: 0, y: 20 }}
       animate={{ 
@@ -82,33 +105,80 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
             </div>
             
             <button 
-              onClick={onToggleLike}
+              onClick={() => setIsEditing(!isEditing)}
               className={cn(
                 "p-2 rounded-xl border transition-all cursor-pointer active:scale-90",
-                isLiked 
-                  ? "bg-white/10 border-white/20 text-white" 
+                isEditing 
+                  ? "bg-white/20 border-white/30 text-white" 
                   : "bg-white/[0.03] border-white/5 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/10"
               )}
-              title={isLiked ? "Remover dos Favoritos" : "Favoritar Ideia"}
+              title="Editar Ideia"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+            
+            <button 
+              onClick={onToggleFavorite}
+              className={cn(
+                "p-2 rounded-xl border transition-all cursor-pointer active:scale-90",
+                isFavorite 
+                  ? "bg-white/20 border-white/30 text-white" 
+                  : "bg-white/[0.03] border-white/5 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/10"
+              )}
+              title={isFavorite ? "Remover dos Favoritos" : "Favoritar Ideia"}
             >
               <motion.div
                 initial={false}
-                animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
+                animate={{ scale: isFavorite ? [1, 1.2, 1] : 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <Bookmark className={cn("w-4 h-4 transition-colors", isLiked && "fill-current")} />
+                <Bookmark className={cn("w-4 h-4 transition-colors", isFavorite && "fill-current")} />
               </motion.div>
             </button>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col justify-center">
-          <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight">
-            {idea.title}
-          </h3>
-          <p className="text-gray-400 text-lg leading-relaxed max-w-[90%]">
-            {idea.description}
-          </p>
+          {isEditing ? (
+            <div className="space-y-4 pointer-events-auto">
+              <input 
+                autoFocus
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white font-bold text-xl outline-none focus:border-white/40 transition-all"
+                placeholder="Título da ideia"
+              />
+              <textarea 
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-gray-200 text-sm outline-none focus:border-white/40 transition-all resize-none h-24"
+                placeholder="Descrição da ideia"
+              />
+              <div className="flex gap-2">
+                <button 
+                  onClick={handleSave}
+                  className="flex-1 bg-white text-black font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                >
+                  <Check className="w-3 h-3" /> Salvar
+                </button>
+                <button 
+                  onClick={handleCancel}
+                  className="flex-1 bg-white/10 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-white/20 transition-colors"
+                >
+                  <X className="w-3 h-3" /> Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight">
+                {idea.title}
+              </h3>
+              <p className="text-gray-400 text-lg leading-relaxed max-w-[90%]">
+                {idea.description}
+              </p>
+            </>
+          )}
         </div>
 
         <div className="mt-auto pt-6 flex items-center gap-2 text-[11px] font-medium text-gray-500 uppercase tracking-widest">
@@ -120,8 +190,16 @@ function SwipeCard({ idea, onSwipe, isFront, index, isLiked, onToggleLike }: any
   );
 }
 
-export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
+export function IdeaSwiper({ 
+  likedIdeas, 
+  setLikedIdeas, 
+  favoriteIdeas,
+  setFavoriteIdeas,
+  onReset,
+  onIncrementUsage
+}: any) {
   const [ideas, setIdeas] = useState(INITIAL_IDEAS);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     if (direction === 'right') {
@@ -138,20 +216,32 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
     setIdeas(prev => prev.filter(i => i.id !== id));
   };
 
-  const handleToggleLike = (idea: any) => {
-    setLikedIdeas((prev: any) => {
-      const isAlreadyLiked = prev.some((p: any) => p.id === idea.id);
-      if (isAlreadyLiked) {
+
+
+  const handleReload = () => {
+    if (onIncrementUsage && !onIncrementUsage()) {
+      return; // blocked by usage limit
+    }
+    setReloadKey(prev => prev + 1);
+    setIdeas(INITIAL_IDEAS);
+    setLikedIdeas([]);
+  };
+
+  const handleUpdateIdea = (id: number, updates: any) => {
+    setIdeas(prev => prev.map(idea => idea.id === id ? { ...idea, ...updates } : idea));
+    setLikedIdeas((prev: any) => prev.map((idea: any) => idea.id === id ? { ...idea, ...updates } : idea));
+    setFavoriteIdeas((prev: any) => prev.map((idea: any) => idea.id === id ? { ...idea, ...updates } : idea));
+  };
+
+  const handleToggleFavorite = (idea: any) => {
+    setFavoriteIdeas((prev: any) => {
+      const isAlreadyFav = prev.some((p: any) => p.id === idea.id);
+      if (isAlreadyFav) {
         return prev.filter((p: any) => p.id !== idea.id);
       } else {
         return [...prev, idea];
       }
     });
-  };
-
-  const handleReload = () => {
-    setIdeas(INITIAL_IDEAS);
-    setLikedIdeas([]);
   };
 
   const forceSwipe = (direction: 'left' | 'right') => {
@@ -177,17 +267,17 @@ export function IdeaSwiper({ likedIdeas, setLikedIdeas, onReset }: any) {
             // Reversing so that index 0 is rendered last (on top)
             [...ideas].reverse().map((idea, index) => {
               const isFront = index === ideas.length - 1;
-              const isLiked = likedIdeas.some((p: any) => p.id === idea.id);
               
               return (
                 <SwipeCard
-                  key={idea.id}
+                  key={`${reloadKey}-${idea.id}`}
                   idea={idea}
                   index={ideas.length - 1 - index}
                   isFront={isFront}
-                  isLiked={isLiked}
-                  onToggleLike={() => handleToggleLike(idea)}
+                  isFavorite={favoriteIdeas.some((p: any) => p.id === idea.id)}
+                  onToggleFavorite={() => handleToggleFavorite(idea)}
                   onSwipe={handleSwipe}
+                  onUpdateIdea={handleUpdateIdea}
                 />
               );
             })

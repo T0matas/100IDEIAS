@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
 
 interface SidebarProps {
+  onOpenGostadas: () => void
   onOpenFavorites: () => void
   onReset: () => void
   isResultsView: boolean
@@ -17,7 +18,7 @@ const MENU_ITEMS = [
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Plataforma' },
 ]
 
-export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin }: SidebarProps) {
+export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
@@ -119,9 +120,13 @@ export function Sidebar({ onOpenFavorites, onReset, isResultsView, isLoggedIn, u
             {filteredItems.map(item => (
               <button 
                 key={item.id}
-                onClick={item.id === 'gerador' ? onReset : onOpenFavorites}
+                onClick={
+                  item.id === 'gerador' ? onReset : 
+                  item.id === 'gostadas' ? onOpenGostadas : 
+                  onOpenFavorites
+                }
                 className={cn(
-                  "w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all cursor-pointer text-sm font-medium",
+                  "w-full flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium outline-none focus:outline-none focus:ring-0 ring-0 focus-visible:ring-0 select-none transition-colors",
                   item.id === 'gerador' && !isResultsView 
                     ? "bg-white/5 text-white border border-white/5 shadow-sm" 
                     : "text-gray-500 hover:text-white hover:bg-white/[0.03]"

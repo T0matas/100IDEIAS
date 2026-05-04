@@ -19,6 +19,7 @@ import { cn } from "../lib/utils"
 interface MobileSidebarProps {
   isOpen: boolean
   onClose: () => void
+  onOpenGostadas: () => void
   onOpenFavorites: () => void
   onReset: () => void
   isResultsView: boolean
@@ -35,6 +36,7 @@ const MENU_ITEMS = [
 export function MobileSidebar({ 
   isOpen, 
   onClose, 
+  onOpenGostadas,
   onOpenFavorites, 
   onReset, 
   isResultsView,
@@ -164,6 +166,7 @@ export function MobileSidebar({
                       active={item.id === 'gerador' ? !isResultsView : false} 
                       onClick={() => { 
                         if (item.id === 'gerador') onReset();
+                        else if (item.id === 'gostadas') onOpenGostadas();
                         else onOpenFavorites();
                         onClose(); 
                       }}
@@ -246,7 +249,7 @@ function MenuButton({
     <button 
       onClick={onClick}
       className={cn(
-        "w-full flex items-center justify-between px-3.5 py-3 rounded-xl transition-all text-sm font-medium",
+        "w-full flex items-center justify-between px-3.5 py-3 rounded-xl transition-all text-sm font-medium outline-none focus:ring-0",
         active 
           ? "bg-white/5 text-white border border-white/5 shadow-inner" 
           : "text-gray-500 hover:text-white hover:bg-white/[0.03]"

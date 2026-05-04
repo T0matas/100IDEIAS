@@ -1,4 +1,4 @@
-import { Send, Shuffle, History, AlertCircle, X } from "lucide-react"
+import { Send, Shuffle, History, AlertCircle, X, RefreshCw } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Button3D } from "./ui/Button3D"
 import { motion, AnimatePresence } from "framer-motion"
@@ -56,12 +56,18 @@ export function GeneratorHeader({
   onGenerate, 
   isGenerating,
   externalValue,
-  onValueChange
+  onValueChange,
+  usageCount,
+  isUpgradeModalOpen,
+  setIsUpgradeModalOpen
 }: { 
   onGenerate: () => void, 
   isGenerating?: boolean,
   externalValue?: string,
-  onValueChange?: (val: string) => void
+  onValueChange?: (val: string) => void,
+  usageCount: number,
+  isUpgradeModalOpen: boolean,
+  setIsUpgradeModalOpen: (open: boolean) => void
 }) {
   const [internalValue, setInternalValue] = useState("")
   const value = externalValue !== undefined ? externalValue : internalValue
@@ -70,6 +76,8 @@ export function GeneratorHeader({
     else setInternalValue(val)
   }
   
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [warningType, setWarningType] = useState<'blocked' | 'empty' | null>(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -90,6 +98,10 @@ export function GeneratorHeader({
     setValue(randomTheme)
   }
 
+  const handleUpgrade = () => {
+    setIsProcessingPayment(true);
+  }
+
   const handleGenerateClick = () => {
     if (!value.trim()) {
       setWarningType('empty');
@@ -103,12 +115,18 @@ export function GeneratorHeader({
       return;
     }
 
+    if (usageCount >= 5) {
+      setIsUpgradeModalOpen(true);
+      return;
+    }
+
     setIsFlying(true);
     setTimeout(() => setIsFlying(false), 600);
 
     if (!recentSearches.includes(value.trim())) {
       setRecentSearches((prev: string[]) => [value.trim(), ...prev].slice(0, 4))
     }
+
     onGenerate()
   }
 
@@ -163,6 +181,25 @@ export function GeneratorHeader({
         </Button3D>
       </div>
 
+      {true && (
+        <div className="mt-4 flex items-center space-x-3 px-1 max-w-2xl">
+          <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min((usageCount / 5) * 100, 100)}%` }}
+              className={cn(
+                "h-full transition-all duration-700 ease-out",
+                usageCount >= 5 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : 
+                usageCount >= 3 ? "bg-amber-500" : "bg-white/20"
+              )}
+            />
+          </div>
+          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">
+            {usageCount}/5 <span className="hidden sm:inline">gerações grátis</span>
+          </span>
+        </div>
+      )}
+
       <AnimatePresence>
         {warningType && (
           <motion.div
@@ -185,6 +222,86 @@ export function GeneratorHeader({
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isUpgradeModalOpen && (
+          <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={isProcessingPayment ? undefined : () => setIsUpgradeModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-[#0F0F0F] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl overflow-hidden"
+            >
+              {/* Premium Background Glow */}
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/10 blur-[100px] rounded-full" />
+              <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-white/5 blur-[100px] rounded-full" />
+
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-black shadow-xl mb-8">
+                  {isProcessingPayment ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    >
+                      <RefreshCw className="w-10 h-10" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{ 
+                        duration: 3, 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }}
+                    >
+                      <Shuffle className="w-10 h-10" />
+                    </motion.div>
+                  )}
+                </div>
+                
+                <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">
+                  {isProcessingPayment ? "Aguarde um momento..." : "Limite Atingido!"}
+                </h2>
+                <p className="text-gray-400 mb-10 leading-relaxed text-sm md:text-base">
+                  {isProcessingPayment 
+                    ? "Estamos preparando seu acesso ilimitado. Não feche esta janela enquanto processamos seu pedido."
+                    : "Você já explorou suas 5 ideias gratuitas de hoje. Desbloqueie o acesso ilimitado para continuar criando sem barreiras."}
+                </p>
+
+                <Button3D 
+                  onClick={handleUpgrade}
+                  color="white"
+                  className="w-full py-4 rounded-2xl group overflow-hidden mb-6 h-14"
+                  disabled={isProcessingPayment}
+                >
+                  <span className="font-bold text-base">
+                    {isProcessingPayment ? "Processando..." : "Plano IDEIA — R$ 7,99"}
+                  </span>
+                </Button3D>
+                
+                {!isProcessingPayment && (
+                  <button 
+                    onClick={() => setIsUpgradeModalOpen(false)}
+                    className="text-gray-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-[0.2em]"
+                  >
+                    Talvez mais tarde
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
