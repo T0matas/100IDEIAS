@@ -75,11 +75,10 @@ router.post("/", authenticate, async (req: AuthRequest, res: Response) => {
 // Like a shared idea (requires auth)
 router.post("/:id/like", authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const ideaId = String(id);
+    const id = req.params.id as string;
 
     const idea = await prisma.sharedIdea.update({
-      where: { id: ideaId },
+      where: { id },
       data: { likes: { increment: 1 } }
     });
 
@@ -94,18 +93,17 @@ router.post("/:id/like", authenticate, async (req: AuthRequest, res: Response) =
 router.patch("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
-    const ideaId = String(id);
+    const id = req.params.id as string;
     const { title, description } = req.body;
 
-    const idea = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
+    const idea = await prisma.sharedIdea.findUnique({ where: { id } });
     if (!idea || idea.userId !== userId) {
       res.status(403).json({ error: "Sem permissão para editar esta ideia." });
       return;
     }
 
     const updated = await prisma.sharedIdea.update({
-      where: { id: ideaId },
+      where: { id },
       data: { title: title || idea.title, description: description || idea.description }
     });
 
@@ -120,16 +118,15 @@ router.patch("/:id", authenticate, async (req: AuthRequest, res: Response) => {
 router.delete("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
-    const ideaId = String(id);
+    const id = req.params.id as string;
 
-    const idea = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
+    const idea = await prisma.sharedIdea.findUnique({ where: { id } });
     if (!idea || idea.userId !== userId) {
       res.status(403).json({ error: "Sem permissão para eliminar esta ideia." });
       return;
     }
 
-    await prisma.sharedIdea.delete({ where: { id: ideaId } });
+    await prisma.sharedIdea.delete({ where: { id } });
     res.json({ success: true });
   } catch (error) {
     console.error(error);
