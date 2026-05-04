@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "build": "tsc",
-    "start": "npm run build && npx prisma db push && node dist/server.js",
+    "start": "npx prisma db push && node dist/server.js",
     "postinstall": "prisma generate"
   },
   "keywords": [],
