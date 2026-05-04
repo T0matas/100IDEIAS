@@ -75,8 +75,8 @@ export function LikedIdeasGrid({
                 <div className="flex flex-col space-y-12">
                   <div className="flex flex-col items-start text-left space-y-2 pt-4">
                     <div className="w-12 h-1 bg-white/20 rounded-full mb-4" />
-                    <h3 className="text-3xl font-bold text-white tracking-tight">Nenhuma ideia gostada</h3>
-                    <p className="text-gray-500 text-sm">As ideias que você marcar como "gostei" aparecerão nesta lista</p>
+                    <h3 className="text-3xl font-bold text-white tracking-tight">Nenhuma ideia marcada como gosto</h3>
+                    <p className="text-gray-500 text-sm">As ideias que você marcar como gosto aparecerão nesta lista</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-20 pointer-events-none select-none">

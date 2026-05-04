@@ -104,7 +104,7 @@ function App() {
                 transition: { type: "spring", stiffness: 400, damping: 10 }
               }}
               className="p-2 text-gray-500 hover:text-white hover:bg-white/[0.03] rounded-xl transition-all cursor-pointer group"
-              title="Gostadas"
+              title="Gostos"
             >
               <ThumbsUp className="w-5 h-5 transition-colors" />
             </motion.button>

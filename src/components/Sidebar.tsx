@@ -15,7 +15,7 @@ interface SidebarProps {
 
 const MENU_ITEMS = [
   { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Criar' },
-  { id: 'gostadas', label: 'Gostadas', icon: ThumbsUp, category: 'Salvo' },
+  { id: 'gostadas', label: 'Gostos', icon: ThumbsUp, category: 'Salvo' },
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Salvo' },
 ]
 
