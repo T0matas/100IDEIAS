@@ -1,0 +1,388 @@
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Send, Users, MessageSquare, ThumbsUp, Lightbulb } from "lucide-react"
+import { cn } from "../lib/utils"
+import { Button3D } from "./ui/Button3D"
+
+interface CommunityViewProps {
+  isLoggedIn: boolean
+  onLogin: () => void
+  userEmail?: string
+}
+
+interface CommunityPost {
+  id: number
+  userName: string
+  userInitials: string
+  timeAgo: string
+  category: string
+  title: string
+  description: string
+  likes: number
+  comments: number
+  isLiked?: boolean
+  commentList?: { text: string, userName: string, userInitials: string }[]
+  matchTag?: string | null
+}
+
+const INITIAL_POSTS: CommunityPost[] = []
+
+export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewProps) {
+  const [posts, setPosts] = useState<CommunityPost[]>(INITIAL_POSTS)
+  const [newPost, setNewPost] = useState("")
+  const [postTitle, setPostTitle] = useState("")
+  const [error, setError] = useState("")
+  const [activeCommentPost, setActiveCommentPost] = useState<number | null>(null)
+  const [commentValue, setCommentValue] = useState("")
+  const [selectedMatchTag, setSelectedMatchTag] = useState<string | null>(null)
+
+  const matchTags = ["Busco Dev", "Busco Designer", "Busco Co-founder", "Busco Marketing"]
+
+  const handlePublish = () => {
+    if (!postTitle.trim() || !newPost.trim()) {
+      setError("Por favor, preencha o título e a descrição da sua ideia.")
+      return
+    }
+    
+    setError("")
+    const newPostObj: CommunityPost = {
+      id: Date.now(),
+      userName: userEmail ? userEmail.split('@')[0] : "Empreendedor",
+      userInitials: userEmail ? userEmail.substring(0, 2).toUpperCase() : "EE",
+      timeAgo: "Agora mesmo",
+      category: "Nova Ideia",
+      title: postTitle,
+      description: newPost,
+      likes: 0,
+      comments: 0,
+      isLiked: false,
+      commentList: [],
+      matchTag: selectedMatchTag
+    }
+
+    setPosts([newPostObj, ...posts])
+    setNewPost("")
+    setPostTitle("")
+    setSelectedMatchTag(null)
+  }
+
+  const handleLike = (postId: number) => {
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        const isLiked = !post.isLiked
+        return {
+          ...post,
+          isLiked,
+          likes: isLiked ? post.likes + 1 : post.likes - 1
+        }
+      }
+      return post
+    }))
+  }
+
+  const handleAddComment = (postId: number) => {
+    if (!commentValue.trim()) return
+    
+    const commentUser = userEmail ? userEmail.split('@')[0] : "Empreendedor"
+    const commentInitials = userEmail ? userEmail.substring(0, 2).toUpperCase() : "EE"
+
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          comments: post.comments + 1,
+          commentList: [...(post.commentList || []), { 
+            text: commentValue, 
+            userName: commentUser, 
+            userInitials: commentInitials 
+          }]
+        }
+      }
+      return post
+    }))
+    setCommentValue("")
+  }
+
+  return (
+    <div className="max-w-4xl pt-6 md:pt-16 pb-24 px-5 md:px-12 w-full">
+      {/* Header */}
+      <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+        Comunidade
+      </h1>
+      <p className="text-gray-400 mb-10 text-sm">
+        Compartilhe suas ideias e inspire outros empreendedores.
+      </p>
+
+      {/* Share Idea Card */}
+      <div className="relative overflow-hidden group">
+        <div className={cn(
+          "bg-[#1A1A1A] border border-white/5 rounded-[2.5rem] p-8 mb-10 shadow-xl transition-all",
+          !isLoggedIn && "blur-[2px] pointer-events-none opacity-50"
+        )}>
+          <div className="flex items-center gap-2 mb-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <Lightbulb className="w-4 h-4" />
+            <span>Compartilhar uma ideia</span>
+          </div>
+          <input
+            type="text"
+            value={postTitle}
+            onChange={(e) => {
+              setPostTitle(e.target.value)
+              if (error) setError("")
+            }}
+            placeholder="Título da sua ideia..."
+            className="w-full bg-transparent border-b border-white/5 text-white placeholder-gray-600 outline-none text-xl md:text-2xl font-bold mb-4 pb-2"
+          />
+          <textarea
+            value={newPost}
+            onChange={(e) => {
+              setNewPost(e.target.value)
+              if (error) setError("")
+            }}
+            placeholder="Descreva sua ideia de negócio..."
+            className="w-full bg-transparent border-none text-white placeholder-gray-600 outline-none resize-none min-h-[120px] text-base md:text-lg mb-6"
+          />
+
+          <div className="mb-8">
+            <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-3">Você precisa de ajuda com algo? (Opcional)</p>
+            <div className="flex flex-wrap gap-2">
+              {matchTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => setSelectedMatchTag(selectedMatchTag === tag ? null : tag)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all",
+                    selectedMatchTag === tag 
+                      ? "bg-white border-white text-black" 
+                      : "bg-white/5 border-white/10 text-gray-500 hover:border-white/30 hover:text-white"
+                  )}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {error && (
+              <motion.p 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-red-400 text-xs font-medium"
+              >
+                {error}
+              </motion.p>
+            )}
+            <div className="flex-1 md:block hidden" />
+            <Button3D
+              onClick={handlePublish}
+              color="white"
+              className="px-8 py-3 rounded-2xl h-12 w-full md:w-auto"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              <span className="font-bold text-sm">Publicar</span>
+            </Button3D>
+          </div>
+        </div>
+
+        {!isLoggedIn && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 mb-10">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] text-center max-w-sm shadow-2xl">
+              <h3 className="text-white font-bold text-lg mb-2">Entre na Conversa</h3>
+              <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                Você precisa estar logado para compartilhar suas ideias com a comunidade.
+              </p>
+              <Button3D onClick={onLogin} color="white" className="w-full py-3 rounded-xl">
+                <span className="font-bold text-sm">Fazer Log in</span>
+              </Button3D>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div className="flex items-center gap-6 mb-10 px-1">
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <Users className="w-4 h-4" />
+          <span className="font-bold">{isLoggedIn ? 1 : 0}</span>
+          <span className="text-gray-600 font-medium">
+            {isLoggedIn && 1 === 1 ? "membro" : "membros"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <Lightbulb className="w-4 h-4" />
+          <span className="font-bold">{posts.length}</span>
+          <span className="text-gray-600 font-medium">
+            {posts.length === 1 ? "ideia partilhada" : "ideias partilhadas"}
+          </span>
+        </div>
+      </div>
+
+      {/* Feed */}
+      <div className="space-y-6">
+        {posts.map((post, index) => (
+          <motion.div
+            key={post.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="bg-[#141414] border border-white/5 rounded-[2.5rem] p-8 md:p-10 hover:border-white/10 transition-all group relative overflow-hidden"
+          >
+            {/* Hover Glow */}
+            <div className="absolute -inset-x-20 -inset-y-20 bg-white/[0.02] blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
+            
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-white shadow-inner">
+                    {post.userInitials}
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-white leading-none mb-1.5">{post.userName}</h4>
+                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{post.timeAgo}</p>
+                  </div>
+                </div>
+                <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white uppercase tracking-[0.15em]">
+                  {post.category}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-white/90 transition-colors">
+                  {post.title}
+                </h3>
+                <p className="text-gray-400 text-base md:text-lg leading-relaxed group-hover:text-gray-300 transition-colors">
+                  {post.description}
+                </p>
+                
+                {post.matchTag && (
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-white bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg flex items-center gap-1.5 uppercase tracking-wider">
+                      <Users className="w-3 h-3" />
+                      {post.matchTag}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-8 pt-4 border-t border-white/5">
+                <button 
+                  onClick={() => handleLike(post.id)}
+                  className={cn(
+                    "flex items-center gap-2.5 text-xs transition-all group/btn",
+                    post.isLiked ? "text-white" : "text-gray-500 hover:text-white"
+                  )}
+                >
+                  <motion.div
+                    key={post.isLiked ? 'liked' : 'unliked'}
+                    animate={post.isLiked ? { 
+                      scale: [1, 1.25, 1],
+                      rotate: [0, -15, 0]
+                    } : { scale: 1, rotate: 0 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                      mass: 0.8
+                    }}
+                    className="flex items-center gap-2.5"
+                  >
+                    <ThumbsUp className={cn(
+                      "w-4 h-4 transition-colors",
+                      post.isLiked ? "fill-white text-white" : "group-hover/btn:-rotate-12"
+                    )} />
+                    <span className="font-bold tracking-tight">{post.likes}</span>
+                  </motion.div>
+                </button>
+                <button 
+                  onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)}
+                  className={cn(
+                    "flex items-center gap-2.5 text-xs transition-all group/btn",
+                    activeCommentPost === post.id ? "text-white" : "text-gray-500 hover:text-white"
+                  )}
+                >
+                  <MessageSquare className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                  <span className="font-bold tracking-tight">{post.comments}</span>
+                </button>
+              </div>
+
+              {/* Comment Section */}
+              <AnimatePresence>
+                {activeCommentPost === post.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-6 space-y-4">
+                      {post.commentList && post.commentList.map((comment, i) => (
+                        <div key={i} className="flex gap-3 items-start bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                            {comment.userInitials}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{comment.userName}</p>
+                            <p className="text-sm text-gray-300 leading-relaxed">{comment.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div className="flex gap-2">
+                        <input 
+                          type="text"
+                          value={commentValue}
+                          onChange={(e) => setCommentValue(e.target.value)}
+                          placeholder="Escreva um comentário..."
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-white/20 transition-all"
+                        />
+                        <button 
+                          onClick={() => handleAddComment(post.id)}
+                          className="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors"
+                        >
+                          Enviar
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        ))}
+
+        {/* Skeleton Placeholders (Examples) */}
+        {[1, 2].map((i) => (
+          <div
+            key={`skeleton-${i}`}
+            className="bg-white/[0.01] border border-white/[0.03] rounded-[2.5rem] p-8 md:p-10 opacity-30 select-none pointer-events-none grayscale"
+          >
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/5" />
+                <div className="space-y-2">
+                  <div className="w-24 h-4 bg-white/5 rounded-md" />
+                  <div className="w-16 h-2 bg-white/5 rounded-md" />
+                </div>
+              </div>
+              <div className="w-20 h-6 bg-white/5 rounded-full" />
+            </div>
+            <div className="w-2/3 h-7 bg-white/5 rounded-lg mb-4" />
+            <div className="space-y-3 mb-8">
+              <div className="w-full h-3 bg-white/5 rounded-md" />
+              <div className="w-full h-3 bg-white/5 rounded-md" />
+              <div className="w-1/2 h-3 bg-white/5 rounded-md" />
+            </div>
+            <div className="flex gap-8">
+              <div className="w-10 h-4 bg-white/5 rounded-md" />
+              <div className="w-10 h-4 bg-white/5 rounded-md" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -5,7 +5,10 @@ import { GeneratorHeader } from "./GeneratorHeader"
 import { SkeletonGrid } from "./SkeletonGrid"
 import { IdeaSwiper } from "./IdeaSwiper"
 import { AnimatePresence, motion } from "framer-motion"
+import { Globe } from "lucide-react"
+import { cn } from "../lib/utils"
 import { LikedIdeasGrid } from "./LikedIdeasGrid"
+import { CommunityView } from "./CommunityView"
 
 
 interface MobileViewProps {
@@ -30,6 +33,8 @@ interface MobileViewProps {
   onGenerate: () => void
   isUpgradeModalOpen: boolean
   setIsUpgradeModalOpen: (val: boolean) => void
+  currentView: 'generator' | 'community'
+  onOpenCommunity: () => void
 }
 
 export function MobileView({
@@ -52,7 +57,9 @@ export function MobileView({
   onIncrementUsage,
   onGenerate,
   isUpgradeModalOpen,
-  setIsUpgradeModalOpen
+  setIsUpgradeModalOpen,
+  currentView,
+  onOpenCommunity
 }: MobileViewProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -60,71 +67,121 @@ export function MobileView({
     <div className="flex flex-col min-h-screen bg-[#0A0A0A] md:hidden">
       <MobileHeader 
         onMenuClick={() => setIsSidebarOpen(true)} 
-        onFavoritesClick={() => setIsGostadasOpen(true)}
       />
       
-      <main className="flex-1 flex flex-col pt-0 pb-10 overflow-y-auto overflow-x-hidden">
-        {/* Generator Section */}
-        <section className="mb-4">
-          <GeneratorHeader 
-            onGenerate={onGenerate}
-            isGenerating={hasGenerated}
-            externalValue={searchValue}
-            onValueChange={setSearchValue}
-            usageCount={usageCount}
-            isUpgradeModalOpen={isUpgradeModalOpen}
-            setIsUpgradeModalOpen={setIsUpgradeModalOpen}
-          />
-        </section>
-
-        {/* Results/Gallery Section */}
-        <section className="px-5 flex-1 flex flex-col">
-          <div className="flex items-center justify-between mb-5 px-1">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">
-              {hasGenerated ? "Sugestões para você" : "Explorar Temas"}
-            </h2>
-            {hasGenerated && (
-              <button onClick={onReset} className="text-[10px] font-bold text-gray-600 hover:text-white transition-colors uppercase tracking-widest">
-                Limpar
-              </button>
-            )}
-          </div>
-
-          <div className="flex-1 min-h-[400px]">
-            <AnimatePresence mode="wait">
-              {hasGenerated ? (
-                <motion.div 
-                  key="swiper"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="flex flex-col items-start w-full"
+      <main className="flex-1 flex flex-col pt-0 pb-10 overflow-y-auto overflow-x-hidden relative">
+        {/* Global Language Switcher Mobile */}
+        <div className="absolute top-4 right-6 z-[100]">
+          <div className="flex items-center gap-4">
+            <Globe className="w-3.5 h-3.5 text-white/30" />
+            <div className="flex items-center gap-3.5">
+              {["PT", "EN"].map((l) => (
+                <button
+                  key={l}
+                  className={cn(
+                    "text-[10px] font-black transition-all relative uppercase",
+                    l === "PT" ? "text-white" : "text-white/20"
+                  )}
                 >
-                  <IdeaSwiper 
-                    likedIdeas={likedIdeas} 
-                    setLikedIdeas={setLikedIdeas} 
-                    favoriteIdeas={favoriteIdeas}
-                    setFavoriteIdeas={setFavoriteIdeas}
-                    onReset={onReset}
-                    onIncrementUsage={onIncrementUsage}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="skeleton"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-full"
-                >
-                  <SkeletonGrid />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {l}
+                  {l === "PT" && (
+                    <div className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {currentView === 'generator' ? (
+            <motion.div
+              key="generator-view-mobile"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ duration: 0.3 }}
+              className="flex-1 flex flex-col"
+            >
+              {/* Generator Section */}
+              <section className="mb-4">
+                <GeneratorHeader 
+                  onGenerate={onGenerate}
+                  isGenerating={hasGenerated}
+                  externalValue={searchValue}
+                  onValueChange={setSearchValue}
+                  usageCount={usageCount}
+                  isUpgradeModalOpen={isUpgradeModalOpen}
+                  setIsUpgradeModalOpen={setIsUpgradeModalOpen}
+                />
+              </section>
+
+              {/* Results/Gallery Section */}
+              <section className="px-5 flex-1 flex flex-col">
+                <div className="flex items-center justify-between mb-5 px-1">
+                  <h2 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">
+                    {hasGenerated ? "Sugestões para você" : "Explorar Temas"}
+                  </h2>
+                  {hasGenerated && (
+                    <button onClick={onReset} className="text-[10px] font-bold text-gray-600 hover:text-white transition-colors uppercase tracking-widest">
+                      Limpar
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1 min-h-[400px]">
+                  <AnimatePresence mode="wait">
+                    {hasGenerated ? (
+                      <motion.div 
+                        key="swiper"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        className="flex flex-col items-start w-full"
+                      >
+                        <IdeaSwiper 
+                          likedIdeas={likedIdeas} 
+                          setLikedIdeas={setLikedIdeas} 
+                          favoriteIdeas={favoriteIdeas}
+                          setFavoriteIdeas={setFavoriteIdeas}
+                          onReset={onReset}
+                          onIncrementUsage={onIncrementUsage}
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div 
+                        key="skeleton"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full"
+                      >
+                        <SkeletonGrid />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="community-view-mobile"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3 }}
+              className="px-0"
+            >
+              <CommunityView 
+                isLoggedIn={isLoggedIn} 
+                onLogin={onOpenLogin} 
+                userEmail={userEmail}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <MobileSidebar 
@@ -137,6 +194,7 @@ export function MobileView({
         isLoggedIn={isLoggedIn}
         userEmail={userEmail}
         onOpenLogin={onOpenLogin}
+        onOpenCommunity={onOpenCommunity}
       />
 
       <LikedIdeasGrid 

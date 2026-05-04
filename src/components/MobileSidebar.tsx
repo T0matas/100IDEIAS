@@ -10,7 +10,8 @@ import {
   Lightbulb,
   ChevronDown,
   HelpCircle,
-  ThumbsUp
+  ThumbsUp,
+  Users
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -26,12 +27,14 @@ interface MobileSidebarProps {
   isLoggedIn: boolean
   userEmail?: string
   onOpenLogin: () => void
+  onOpenCommunity: () => void
 }
 
 const MENU_ITEMS = [
   { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Criar' },
   { id: 'gostadas', label: 'Gostos', icon: ThumbsUp, category: 'Salvo' },
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Salvo' },
+  { id: 'comunidade', label: 'Comunidade', icon: Users, category: 'Social' },
 ]
 
 export function MobileSidebar({ 
@@ -43,7 +46,8 @@ export function MobileSidebar({
   isResultsView,
   isLoggedIn,
   userEmail,
-  onOpenLogin
+  onOpenLogin,
+  onOpenCommunity
 }: MobileSidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -167,7 +171,8 @@ export function MobileSidebar({
                           onClick={() => {
                             if (item.id === 'gerador') onReset();
                             else if (item.id === 'gostadas') onOpenGostadas();
-                            else onOpenFavorites();
+                            else if (item.id === 'favoritas') onOpenFavorites();
+                            else onOpenCommunity();
                             onClose();
                           }}
                           className={cn(

@@ -1,15 +1,66 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { Lightbulb, Bookmark, Search, Edit2, Check, X, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Lightbulb, Bookmark, Search, Edit2, Check, X, RefreshCw, ThumbsUp, ThumbsDown, ChevronRight, Copy } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button3D } from './ui/Button3D';
+import { IdeaDetailModal } from './IdeaDetailModal';
 
 const INITIAL_IDEAS = [
-  { id: 1, title: 'Assistente Virtual de Compras', description: 'Uma IA que analisa seu estilo e orçamento, encontrando as melhores roupas em lojas parceiras.' },
-  { id: 2, title: 'App de Receitas com Sobras', description: 'Tire uma foto da sua geladeira e o app sugere receitas criativas e deliciosas para evitar o desperdício.' },
-  { id: 3, title: 'Plataforma de Troca de Habilidades', description: 'Aprenda violão ensinando inglês. Uma rede social onde a moeda é o seu conhecimento.' },
-  { id: 4, title: 'Gamificação de Hábitos de Leitura', description: 'Transforme sua rotina de leitura num RPG onde seu personagem evolui a cada capítulo lido.' },
-  { id: 5, title: 'Marketplace de Assinaturas Compartilhadas', description: 'Sistema seguro para dividir custos de streaming e softwares de forma automatizada.' },
+  { 
+    id: 1, 
+    title: 'SaaS de Otimização de Logística Reversa Circular', 
+    description: 'Plataforma B2B que utiliza ML para prever o ciclo de vida de produtos e automatizar a logística de devolução para reciclagem ou revenda.',
+    details: [
+      "Integração com ERPs para rastreamento de SKU desde a venda até o descarte.",
+      "Algoritmo preditivo de 'Taxa de Devolução' baseado em dados sazonais e de comportamento.",
+      "Modelo de negócio: SaaS tiered pricing + Taxa por transação de crédito de carbono gerado.",
+      "Dica: O diferencial único é a geração automática de certificados de conformidade ESG para as empresas parceiras."
+    ]
+  },
+  { 
+    id: 2, 
+    title: 'Marketplace de "Digital Twin" para Real Estate de Luxo', 
+    description: 'Plataforma para corretores de luxo que oferece gêmeos digitais interativos com simulação de iluminação solar e design de interiores dinâmico via IA.',
+    details: [
+      "Renderização em tempo real via Cloud GPU para visualização em qualquer dispositivo.",
+      "IA que sugere modificações estruturais baseadas em tendências arquitetônicas do bairro.",
+      "Monetização: Assinatura para corretores + Marketplace de fornecedores de móveis (afiliados).",
+      "Dica: Foque no mercado de pré-lançamento, onde o comprador precisa 'sentir' o imóvel antes da construção."
+    ]
+  },
+  { 
+    id: 3, 
+    title: 'Protocolo de Verificação de "Deepfake" para Jornalismo', 
+    description: 'Ferramenta forense digital que utiliza blockchain e análise de metadados para garantir a autenticidade de vídeos e áudios em tempo real.',
+    details: [
+      "Sistema de 'ancoragem' de metadados na blockchain no momento da gravação original.",
+      "Rede neural adversarial (GAN) que detecta inconsistências de compressão e luz.",
+      "Público-alvo: Agências de notícias, tribunais e departamentos de compliance corporativo.",
+      "Dica: Posicione-se como o 'Selo de Confiança' obrigatório para mídias digitais em anos eleitorais."
+    ]
+  },
+  { 
+    id: 4, 
+    title: 'Bio-Plataforma de Nutrição Personalizada via Bio-Sensores', 
+    description: 'App que cruza dados de CGM (Monitores de Glicose) e biometria em tempo real para criar dietas dinâmicas que previnem picos de insulina.',
+    details: [
+      "Conexão direta com dispositivos wearables de grau médico via Bluetooth Low Energy.",
+      "Motor de recomendação que ajusta a próxima refeição baseada na resposta metabólica da anterior.",
+      "Modelo: Assinatura mensal + venda direta de sensores de marca própria.",
+      "Dica: O valor único é a eliminação do 'adivinho' na dieta; é ciência aplicada ao prato do usuário."
+    ]
+  },
+  { 
+    id: 5, 
+    title: 'Ecossistema de Micro-Investimento em Propriedade Intelectual (PI)', 
+    description: 'Plataforma que tokeniza royalties de músicas, patentes e códigos-fonte, permitindo que criadores captem recursos com sua audiência.',
+    details: [
+      "Smart contracts em redes de baixo custo (como Polygon) para distribuição automática de royalties.",
+      "Dashboard analítico de performance de PI em plataformas como Spotify, Steam e portais de patentes.",
+      "Monetização: 5% de taxa de captação + 1% sobre transações no mercado secundário.",
+      "Dica: Comece com desenvolvedores independentes de games, um nicho com alta necessidade de capital e fãs engajados."
+    ]
+  },
 ];
 
 function SwipeCard({ 
@@ -19,11 +70,22 @@ function SwipeCard({
   index, 
   isFavorite,
   onToggleFavorite,
-  onUpdateIdea 
+  onUpdateIdea,
+  onOpenDetails
 }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(idea.title);
   const [editedDescription, setEditedDescription] = useState(idea.description);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const textToCopy = `${idea.title}\n\n${idea.description}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
 
   const handleSave = () => {
     onUpdateIdea(idea.id, { title: editedTitle, description: editedDescription });
@@ -115,37 +177,60 @@ function SwipeCard({
               Sugestão IA
             </div>
             
-            <button 
-              onClick={() => setIsEditing(!isEditing)}
-              className={cn(
-                "p-2 rounded-xl border transition-all cursor-pointer active:scale-90",
-                isEditing 
-                  ? "bg-white/20 border-white/30 text-white" 
-                  : "bg-white/[0.03] border-white/5 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/10"
+            <div className="flex items-center gap-2">
+              {!isEditing && (
+                <button 
+                  onClick={handleCopy}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-90 relative"
+                  title="Copiar ideia"
+                >
+                  <AnimatePresence mode="wait">
+                    {isCopied ? (
+                      <motion.div
+                        key="check"
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.5, opacity: 0 }}
+                      >
+                        <Check className="w-4 h-4 text-green-500" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="copy"
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.5, opacity: 0 }}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </button>
               )}
-              title="Editar Ideia"
-            >
-              <Edit2 className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={onToggleFavorite}
-              className={cn(
-                "p-2 rounded-xl border transition-all cursor-pointer active:scale-90",
-                isFavorite 
-                  ? "bg-white/20 border-white/30 text-white" 
-                  : "bg-white/[0.03] border-white/5 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/10"
-              )}
-              title={isFavorite ? "Remover dos Favoritos" : "Favoritar Ideia"}
-            >
-              <motion.div
-                initial={false}
-                animate={{ scale: isFavorite ? [1, 1.2, 1] : 1 }}
-                transition={{ duration: 0.3 }}
+              <button 
+                onClick={() => setIsEditing(!isEditing)}
+                className={cn(
+                  "w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-90",
+                  isEditing ? "bg-white text-black" : "bg-white/5 text-gray-500 hover:text-white hover:bg-white/10"
+                )}
+                title={isEditing ? "Confirmar" : "Editar Ideia"}
               >
-                <Bookmark className={cn("w-4 h-4 transition-colors", isFavorite && "fill-current")} />
-              </motion.div>
-            </button>
+                {isEditing ? <Check className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(idea);
+                }}
+                className={cn(
+                  "w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-90",
+                  isFavorite ? "bg-white text-black shadow-lg" : "bg-white/5 text-gray-500 hover:text-white hover:bg-white/10"
+                )}
+                title={isFavorite ? "Remover dos Favoritos" : "Favoritar Ideia"}
+              >
+                <Bookmark className={cn("w-4 h-4", isFavorite && "fill-current")} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -181,20 +266,49 @@ function SwipeCard({
               </div>
             </div>
           ) : (
-            <>
-              <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight">
+            <div 
+              className="group cursor-pointer pointer-events-auto" 
+              onClick={() => {
+                // Only open if the card hasn't been dragged significantly
+                if (Math.abs(x.get()) < 10) {
+                  onOpenDetails();
+                }
+              }}
+            >
+              <h3 className="mb-4 text-3xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
                 {idea.title}
               </h3>
-              <p className="text-gray-400 text-lg leading-relaxed max-w-[90%]">
+              <p className="text-gray-400 text-lg leading-relaxed max-w-[90%] group-hover:text-gray-300 transition-colors">
                 {idea.description}
               </p>
-            </>
+            </div>
           )}
         </div>
 
-        <div className="mt-auto pt-6 flex items-center gap-2 text-[11px] font-medium text-gray-500 uppercase tracking-widest">
-          <div className="w-1.5 h-1.5 rounded-full bg-white" />
-          Ideia Pronta para Executar
+        <div className="mt-auto pt-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[11px] font-medium text-gray-500 uppercase tracking-widest">
+            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+            Ideia Pronta para Executar
+          </div>
+          
+          {!isEditing && (
+            <button 
+              onClick={() => {
+                if (Math.abs(x.get()) < 10) {
+                  onOpenDetails();
+                }
+              }}
+              className="pointer-events-auto text-[10px] font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1 group/btn"
+            >
+              Ver Detalhes
+              <motion.div
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </motion.div>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -211,6 +325,7 @@ export function IdeaSwiper({
 }: any) {
   const [ideas, setIdeas] = useState(INITIAL_IDEAS);
   const [reloadKey, setReloadKey] = useState(0);
+  const [selectedIdea, setSelectedIdea] = useState<any>(null);
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     if (direction === 'right') {
@@ -289,6 +404,7 @@ export function IdeaSwiper({
                   onToggleFavorite={() => handleToggleFavorite(idea)}
                   onSwipe={handleSwipe}
                   onUpdateIdea={handleUpdateIdea}
+                  onOpenDetails={() => setSelectedIdea(idea)}
                 />
               );
             })
@@ -338,6 +454,11 @@ export function IdeaSwiper({
           </button>
         </div>
       )}
+
+      <IdeaDetailModal 
+        idea={selectedIdea} 
+        onClose={() => setSelectedIdea(null)} 
+      />
     </section>
   );
 }

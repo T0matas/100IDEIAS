@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ThumbsUp, Bookmark, Trash2, Lightbulb } from "lucide-react"
+import { X, ThumbsUp, Bookmark, Trash2, Lightbulb, ChevronRight } from "lucide-react"
 import { cn } from "../lib/utils"
+import { IdeaDetailModal } from "./IdeaDetailModal"
+import { useState } from "react"
 
 
 
@@ -21,6 +23,7 @@ export function LikedIdeasGrid({
   onToggleFavorite,
   favoriteIdeas 
 }: LikedIdeasGridProps) {
+  const [selectedIdea, setSelectedIdea] = useState<any>(null);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -147,15 +150,23 @@ export function LikedIdeasGrid({
                           </div>
                         </div>
 
-                        <h3 className="text-base font-bold text-white mb-2 leading-tight">
-                          {idea.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 leading-relaxed flex-1">
-                          {idea.description}
-                        </p>
+                        <div className="cursor-pointer group/content flex-1" onClick={() => setSelectedIdea(idea)}>
+                          <h3 className="text-base font-bold text-white mb-2 leading-tight group-hover/content:text-white/80 transition-colors">
+                            {idea.title}
+                          </h3>
+                          <p className="text-xs text-gray-500 leading-relaxed group-hover/content:text-gray-400 transition-colors">
+                            {idea.description}
+                          </p>
+                        </div>
 
                         <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between">
-                          <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Salva</span>
+                          <button 
+                            onClick={() => setSelectedIdea(idea)}
+                            className="text-[9px] font-bold text-gray-600 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1 group/btn"
+                          >
+                            Ver Detalhes
+                            <ChevronRight className="w-2.5 h-2.5 group-hover/btn:translate-x-0.5 transition-transform" />
+                          </button>
                           <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
                         </div>
                       </motion.div>
@@ -167,6 +178,7 @@ export function LikedIdeasGrid({
           </motion.div>
         </div>
       )}
+      <IdeaDetailModal idea={selectedIdea} onClose={() => setSelectedIdea(null)} />
     </AnimatePresence>
   )
 }

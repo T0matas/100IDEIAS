@@ -1,4 +1,4 @@
-import { Lightbulb, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass } from "lucide-react"
+import { Lightbulb, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass, Users } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
@@ -11,15 +11,18 @@ interface SidebarProps {
   isLoggedIn: boolean
   userEmail?: string
   onLogin: () => void
+  onOpenCommunity: () => void
+  currentView: string
 }
 
 const MENU_ITEMS = [
   { id: 'gerador', label: 'Gerador', icon: Compass, category: 'Criar' },
   { id: 'gostadas', label: 'Gostos', icon: ThumbsUp, category: 'Salvo' },
   { id: 'favoritas', label: 'Favoritas', icon: Bookmark, category: 'Salvo' },
+  { id: 'comunidade', label: 'Comunidade', icon: Users, category: 'Social' },
 ]
 
-export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin }: SidebarProps) {
+export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin, onOpenCommunity, currentView }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
@@ -123,16 +126,19 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
               <p className="text-[10px] font-bold text-gray-600 mb-2 px-3 tracking-widest uppercase">{category}</p>
               <nav className="space-y-1">
                 {categoryItems.map(item => (
-                  <button 
+                  <motion.button 
                     key={item.id}
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={
                       item.id === 'gerador' ? onReset : 
                       item.id === 'gostadas' ? onOpenGostadas : 
-                      onOpenFavorites
+                      item.id === 'favoritas' ? onOpenFavorites :
+                      onOpenCommunity
                     }
                     className={cn(
                       "w-full flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium outline-none transition-all group",
-                      item.id === 'gerador' && !isResultsView 
+                      (item.id === 'gerador' && currentView === 'generator' && !isResultsView) || (item.id === 'comunidade' && currentView === 'community') 
                         ? "bg-white/[0.05] text-white" 
                         : "text-gray-500 hover:text-white hover:bg-white/[0.03]"
                     )}
@@ -141,7 +147,7 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
                       "w-4 h-4 transition-colors text-gray-500 group-hover:text-white"
                     )} />
                     <span>{item.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </nav>
             </div>
