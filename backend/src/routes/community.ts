@@ -76,9 +76,10 @@ router.post("/", authenticate, async (req: AuthRequest, res: Response) => {
 router.post("/:id/like", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const ideaId = String(id);
 
     const idea = await prisma.sharedIdea.update({
-      where: { id },
+      where: { id: ideaId },
       data: { likes: { increment: 1 } }
     });
 
@@ -94,16 +95,17 @@ router.patch("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
     const { id } = req.params;
+    const ideaId = String(id);
     const { title, description } = req.body;
 
-    const idea = await prisma.sharedIdea.findUnique({ where: { id } });
+    const idea = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
     if (!idea || idea.userId !== userId) {
       res.status(403).json({ error: "Sem permissão para editar esta ideia." });
       return;
     }
 
     const updated = await prisma.sharedIdea.update({
-      where: { id },
+      where: { id: ideaId },
       data: { title: title || idea.title, description: description || idea.description }
     });
 
@@ -119,14 +121,15 @@ router.delete("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
     const { id } = req.params;
+    const ideaId = String(id);
 
-    const idea = await prisma.sharedIdea.findUnique({ where: { id } });
+    const idea = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
     if (!idea || idea.userId !== userId) {
       res.status(403).json({ error: "Sem permissão para eliminar esta ideia." });
       return;
     }
 
-    await prisma.sharedIdea.delete({ where: { id } });
+    await prisma.sharedIdea.delete({ where: { id: ideaId } });
     res.json({ success: true });
   } catch (error) {
     console.error(error);
