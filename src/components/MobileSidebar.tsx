@@ -10,7 +10,8 @@ import {
   ChevronDown,
   HelpCircle,
   ThumbsUp,
-  Users
+  Users,
+  LogOut
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -27,6 +28,7 @@ interface MobileSidebarProps {
   userEmail?: string
   onOpenLogin: () => void
   onOpenCommunity: () => void
+  onLogout: () => void
   currentView: 'generator' | 'community'
 }
 
@@ -48,6 +50,7 @@ export function MobileSidebar({
   userEmail,
   onOpenLogin,
   onOpenCommunity,
+  onLogout,
   currentView
 }: MobileSidebarProps) {
   const [searchValue, setSearchValue] = useState("")
@@ -136,6 +139,15 @@ export function MobileSidebar({
                           <HelpCircle className="w-4 h-4" />
                           <span>Ajuda</span>
                         </button>
+                        {isLoggedIn && (
+                          <button 
+                            onClick={onLogout}
+                            className="w-full text-left px-2.5 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors flex items-center space-x-2"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span>Sair da Conta</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </motion.div>

@@ -1,4 +1,4 @@
-import { Lightbulb, Bookmark, Search, Settings, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass, Users } from "lucide-react"
+import { Lightbulb, Bookmark, Search, Settings, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass, Users, LogOut } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
@@ -11,6 +11,7 @@ interface SidebarProps {
   isLoggedIn: boolean
   userEmail?: string
   onLogin: () => void
+  onLogout: () => void
   onOpenCommunity: () => void
   currentView: string
 }
@@ -30,6 +31,7 @@ export function Sidebar({
   isLoggedIn, 
   userEmail, 
   onLogin, 
+  onLogout,
   onOpenCommunity, 
   currentView
 }: SidebarProps) {
@@ -96,11 +98,20 @@ export function Sidebar({
                   {isLoggedIn ? (userEmail || "usuario@email.com") : "Faça login para salvar"}
                 </span>
               </div>
-              <div className="p-1.5">
+              <div className="p-1.5 space-y-0.5">
                 <button className="w-full text-left px-2.5 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-2 cursor-pointer">
                   <HelpCircle className="w-4 h-4" />
                   <span>Ajuda</span>
                 </button>
+                {isLoggedIn && (
+                  <button 
+                    onClick={onLogout}
+                    className="w-full text-left px-2.5 py-1.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors flex items-center space-x-2 cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sair da Conta</span>
+                  </button>
+                )}
               </div>
             </motion.div>
           )}

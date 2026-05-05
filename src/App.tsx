@@ -86,6 +86,14 @@ function App() {
     }
   }, [])
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setIsLoggedIn(false)
+    setUserEmail("")
+    window.location.reload() // Reload to clear all states
+  }
+
   useEffect(() => {
     localStorage.setItem('usageCount', usageCount.toString());
   }, [usageCount])
@@ -146,6 +154,7 @@ function App() {
         isLoggedIn={isLoggedIn}
         userEmail={userEmail}
         onOpenLogin={() => setIsLoginOpen(true)}
+        onLogout={handleLogout}
         onReset={() => {
           setHasGenerated(false);
           setSearchValue("");
@@ -176,6 +185,7 @@ function App() {
           isLoggedIn={isLoggedIn}
           userEmail={userEmail}
           onLogin={() => setIsLoginOpen(true)}
+          onLogout={handleLogout}
           onOpenCommunity={() => setCurrentView('community')}
           currentView={currentView}
         />
