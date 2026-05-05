@@ -20,6 +20,7 @@ model User {
   favoriteIdeas FavoriteIdea[]
   sharedIdeas   SharedIdea[]
   comments      Comment[]
+  commentLikes  CommentLike[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,5 +74,17 @@ model Comment {
   ideaId    String
   idea      SharedIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   
+  likes     Int      @default(0)
+  commentLikes CommentLike[]
   createdAt DateTime @default(now())
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
 }

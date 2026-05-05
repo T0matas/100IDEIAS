@@ -23,7 +23,7 @@ interface CommunityPost {
   likes: number
   comments: number
   isLiked?: boolean
-  commentList?: { text: string, userName: string, userInitials: string }[]
+  commentList?: { id: string, text: string, userName: string, userInitials: string, likes: number, isLiked?: boolean }[]
   matchTag?: string | null
 }
 
@@ -122,6 +122,10 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
   }
 
   const handleAddComment = async (postId: string) => {
+    if (!isLoggedIn) {
+      onLogin()
+      return
+    }
     if (!commentValue.trim()) return
     try {
       const token = localStorage.getItem("token")
@@ -145,6 +149,34 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  const handleCommentLike = async (postId: string, commentId: string) => {
+    if (!isLoggedIn) {
+      onLogin()
+      return
+    }
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/comment/${commentId}/like`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              commentList: post.commentList?.map(c => 
+                c.id === commentId ? { ...c, likes: data.likes, isLiked: data.isLiked } : c
+              )
+            }
+          }
+          return post
+        }))
+      }
+    } catch (e) { console.error(e) }
   }
 
   const handleDelete = async (postId: string) => {
@@ -442,7 +474,13 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                   </motion.div>
                 </button>
                 <button 
-                  onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)}
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      onLogin()
+                    } else {
+                      setActiveCommentPost(activeCommentPost === post.id ? null : post.id)
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-2.5 text-xs transition-all group/btn",
                     activeCommentPost === post.id ? "text-white" : "text-gray-500 hover:text-white"
@@ -469,7 +507,19 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                             {comment.userInitials}
                           </div>
                           <div className="flex-1">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{comment.userName}</p>
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{comment.userName}</p>
+                              <button 
+                                onClick={() => handleCommentLike(post.id, comment.id)}
+                                className={cn(
+                                  "flex items-center gap-1.5 text-[10px] transition-all",
+                                  comment.isLiked ? "text-white" : "text-gray-500 hover:text-white"
+                                )}
+                              >
+                                <ThumbsUp className={cn("w-3 h-3", comment.isLiked && "fill-white text-white")} />
+                                <span className="font-bold">{comment.likes || 0}</span>
+                              </button>
+                            </div>
                             <p className="text-sm text-gray-300 leading-relaxed">{comment.text}</p>
                           </div>
                         </div>

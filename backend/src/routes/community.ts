@@ -8,13 +8,19 @@ const prisma = new PrismaClient();
 // Get all shared ideas (public feed)
 router.get("/", async (req: Request, res: Response) => {
   try {
+    const userId = req.headers.authorization ? 
+      (await prisma.user.findFirst({ where: { id: (req as any).userId } }))?.id : null;
+
     const ideas = await prisma.sharedIdea.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
         user: { select: { name: true, email: true } },
         comments: {
-          include: { user: { select: { name: true, email: true } } },
+          include: { 
+            user: { select: { name: true, email: true } },
+            commentLikes: true
+          },
           orderBy: { createdAt: "asc" }
         }
       }
@@ -30,7 +36,10 @@ router.get("/", async (req: Request, res: Response) => {
       likes: idea.likes,
       comments: idea.comments.length,
       commentList: idea.comments.map((c: any) => ({
+        id: c.id,
         text: c.content,
+        likes: c.likes || 0,
+        isLiked: userId ? c.commentLikes.some((cl: any) => cl.userId === userId) : false,
         userName: c.user.name || c.user.email.split("@")[0],
         userInitials: (c.user.name || c.user.email).substring(0, 2).toUpperCase()
       })),
@@ -157,13 +166,45 @@ router.post("/:id/comment", authenticate, async (req: AuthRequest, res: Response
     });
 
     res.status(201).json({
+      id: comment.id,
       text: comment.content,
+      likes: 0,
       userName: comment.user.name || comment.user.email.split("@")[0],
       userInitials: (comment.user.name || comment.user.email).substring(0, 2).toUpperCase()
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao adicionar comentário." });
+  }
+});
+
+// Like a comment (requires auth)
+router.post("/comment/:id/like", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const commentId = String(id);
+    const userId = req.userId!;
+
+    const existingLike = await prisma.commentLike.findUnique({
+      where: { userId_commentId: { userId, commentId } }
+    });
+
+    if (existingLike) {
+      await prisma.$transaction([
+        prisma.commentLike.delete({ where: { id: existingLike.id } }),
+        prisma.comment.update({ where: { id: commentId }, data: { likes: { decrement: 1 } } })
+      ]);
+      return res.json({ likes: (await prisma.comment.findUnique({ where: { id: commentId } }))?.likes || 0, isLiked: false });
+    } else {
+      await prisma.$transaction([
+        prisma.commentLike.create({ data: { userId, commentId } }),
+        prisma.comment.update({ where: { id: commentId }, data: { likes: { increment: 1 } } })
+      ]);
+      return res.json({ likes: (await prisma.comment.findUnique({ where: { id: commentId } }))?.likes || 0, isLiked: true });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao curtir comentário." });
   }
 });
 
