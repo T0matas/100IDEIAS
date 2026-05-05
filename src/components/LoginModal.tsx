@@ -72,9 +72,21 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
         setError("Por favor, preencha todos os campos obrigatórios.")
         return
       }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+      if (!emailRegex.test(email)) {
+        setError("Por favor, use um email real do Google (@gmail.com).")
+        return
+      }
     } else {
       if (!name || !email || !password) {
         setError("Por favor, preencha todos os campos obrigatórios.")
+        return
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+      if (!emailRegex.test(email)) {
+        setError("Por favor, use um email real do Google (@gmail.com).")
         return
       }
     }
@@ -117,6 +129,12 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
 
     if (!email) {
       setError("Por favor, introduza o seu email.")
+      return
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(email)) {
+      setError("Por favor, use um email real do Google (@gmail.com).")
       return
     }
 

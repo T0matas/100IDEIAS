@@ -20,6 +20,12 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ error: "Por favor, use um email real do Google (@gmail.com)." });
+      return;
+    }
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       res.status(400).json({ error: "Email já cadastrado." });
@@ -87,6 +93,12 @@ router.post("/forgot-password", async (req: Request, res: Response): Promise<voi
 
     if (!email) {
       res.status(400).json({ error: "Email é obrigatório." });
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ error: "Por favor, use um email real do Google (@gmail.com)." });
       return;
     }
 

@@ -141,18 +141,18 @@ export function GeneratorHeader({
   }
 
   return (
-    <div className="max-w-2xl pt-2 md:pt-10 pb-6 px-5 md:px-8 relative z-20">
+    <div className="max-w-2xl pt-2 md:pt-6 pb-6 px-5 md:px-8 relative z-20">
       <div className="w-8 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-xl md:text-3xl font-bold text-white mb-2 tracking-tight leading-[1.1] min-h-[50px] md:min-h-[70px]">
+      <h1 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight leading-[1.1] min-h-[40px] md:min-h-[50px]">
         O que você quer <br />
         <span className="text-gray-500"><TypewriterText /></span>
       </h1>
-      <p className="text-gray-400 mb-6 md:mb-8 mt-1 md:mt-2 text-xs max-w-lg">
+      <p className="text-gray-400 mb-4 md:mb-6 mt-1 md:mt-2 text-[11px] md:text-xs max-w-lg">
         Digite qualquer tema e nossa IA gerará 5 cards de ideias incríveis para você avaliar.
       </p>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-2xl mt-6">
-        <div className="flex-1 relative flex items-center shadow-[0_6px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_6px_0_rgb(25,25,25)] overflow-hidden h-[52px] sm:h-[48px]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-2xl mt-4">
+        <div className="flex-1 relative flex items-center shadow-[0_6px_0_rgb(15,15,15)] rounded-2xl bg-[#1A1A1A] border border-white/5 transition-all focus-within:border-white/20 focus-within:shadow-[0_6px_0_rgb(25,25,25)] overflow-hidden h-[50px] sm:h-[46px]">
           <input
             type="text"
             value={value}
@@ -182,7 +182,7 @@ export function GeneratorHeader({
           onClick={handleGenerateClick}
           onMouseUp={(e) => e.currentTarget.blur()}
           color="white"
-          className="px-8 rounded-2xl group overflow-hidden h-[52px] sm:h-[48px] flex-shrink-0"
+          className="px-8 rounded-2xl group overflow-hidden h-[50px] sm:h-[46px] flex-shrink-0"
         >
           <span className="font-bold text-sm">Gerar Ideias</span>
           <Send className={cn(
@@ -297,7 +297,7 @@ export function GeneratorHeader({
                 <Button3D
                   onClick={handleUpgrade}
                   color="white"
-                  className="w-full rounded-2xl group overflow-hidden mb-6 h-[52px] sm:h-[48px]"
+                  className="w-full rounded-2xl group overflow-hidden mb-6 h-[50px] sm:h-[46px]"
                   disabled={isProcessingPayment}
                 >
                   <span className="font-bold text-base">
@@ -319,7 +319,7 @@ export function GeneratorHeader({
         )}
       </AnimatePresence>
 
-      <div className="mt-10">
+      <div className="mt-8">
         <div className="flex items-center justify-between mb-4 max-w-3xl">
           <div className="flex items-center space-x-2 text-gray-500 font-semibold text-xs uppercase tracking-wider">
             <History className="w-3.5 h-3.5" />

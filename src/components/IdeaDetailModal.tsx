@@ -50,12 +50,12 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-[#111111] border border-white/10 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl"
+            className="relative w-full max-w-[480px] bg-[#111111] border border-white/10 rounded-[2rem] md:rounded-[2.2rem] overflow-hidden shadow-2xl"
           >
             {/* Header Gradient */}
-            <div className="h-20 md:h-32 bg-gradient-to-br from-white/10 to-transparent p-5 md:p-8 flex items-end">
-              <div className="w-9 h-9 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-black shadow-xl">
-                <Lightbulb className="w-4.5 h-4.5 md:w-6 md:h-6" />
+            <div className="h-20 md:h-24 bg-gradient-to-br from-white/10 to-transparent p-5 md:p-6 flex items-end">
+              <div className="w-9 h-9 md:w-11 md:h-11 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-black shadow-xl">
+                <Lightbulb className="w-4.5 h-4.5 md:w-5 md:h-5" />
               </div>
             </div>
 
@@ -66,11 +66,11 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-5 md:p-8 pt-4 md:pt-6">
-              <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 tracking-tight">
+            <div className="p-5 md:p-7 pt-4 md:pt-5">
+              <h2 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-2.5 tracking-tight">
                 {idea.title}
               </h2>
-              <p className="text-gray-400 mb-5 md:mb-8 text-[11px] md:text-sm leading-relaxed">
+              <p className="text-gray-400 mb-5 md:mb-6 text-[11px] md:text-xs leading-relaxed">
                 {idea.description}
               </p>
 
@@ -84,7 +84,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                     className="space-y-6"
                   >
                     <div>
-                      <h4 className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3 md:mb-4 flex items-center gap-2">
+                      <h4 className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3 md:mb-3 flex items-center gap-2">
                         <Target className="w-3 h-3" />
                         Componentes da Ideia
                       </h4>
@@ -100,7 +100,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                             <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
                               <span className="text-[10px] font-bold text-white">{i + 1}</span>
                             </div>
-                            <span className="text-[10px] md:text-sm text-gray-300 leading-relaxed">
+                            <span className="text-[10px] md:text-xs text-gray-300 leading-relaxed">
                               {detail}
                             </span>
                           </motion.li>
@@ -110,11 +110,11 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       </ul>
                     </div>
 
-                    <div className="flex flex-col gap-3 pt-4">
+                    <div className="flex flex-col gap-3 pt-3">
                       <Button3D 
                         onClick={handleGenerateRoadmap} 
                         color="white" 
-                        className="w-full h-[52px] sm:h-[48px] rounded-xl md:rounded-2xl relative overflow-hidden group"
+                        className="w-full h-[50px] sm:h-[46px] rounded-xl md:rounded-xl relative overflow-hidden group"
                         disabled={isGenerating}
                       >
                         <AnimatePresence mode="wait">
@@ -171,32 +171,32 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="space-y-6"
+                    className="space-y-4 md:space-y-5"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
                         <Shuffle className="w-3 h-3" />
                         Roadmap: Primeiros 30 Dias
                       </h4>
                       <button 
                         onClick={() => setView('details')}
-                        className="text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest"
+                        className="text-[9px] md:text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest"
                       >
                         Voltar
                       </button>
                     </div>
 
-                    <div className="space-y-6 max-h-[280px] md:max-h-[350px] overflow-y-auto pr-3 custom-scrollbar relative">
+                    <div className="space-y-4 max-h-[250px] md:max-h-[280px] overflow-y-auto pr-3 custom-scrollbar relative">
                       {/* Timeline Line */}
                       <div className="absolute left-[26px] top-6 bottom-6 w-px bg-gradient-to-b from-white/20 via-white/10 to-transparent pointer-events-none" />
 
                       {roadmapData.map((week, i) => (
                         <div key={i} className="relative pl-10 md:pl-12">
                           {/* Dot */}
-                          <div className="absolute left-[21px] top-2 w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-white border-[2px] md:border-[3px] border-[#111111] z-10 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+                          <div className="absolute left-[21px] top-2 w-2 h-2 md:w-2 md:h-2 rounded-full bg-white border-[2px] md:border-[2px] border-[#111111] z-10 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
                           
-                          <div className="bg-white/[0.03] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-5 hover:bg-white/[0.05] transition-colors group">
-                            <div className="flex items-center justify-between mb-3 md:mb-4">
+                          <div className="bg-white/[0.03] border border-white/5 rounded-[1.5rem] md:rounded-[1.6rem] p-3.5 md:p-4 hover:bg-white/[0.05] transition-colors group">
+                            <div className="flex items-center justify-between mb-2 md:mb-2.5">
                               <div className="flex items-center gap-2">
                                 <span className="text-[9px] md:text-[10px] font-black text-black bg-white px-1.5 md:px-2 py-0.5 rounded uppercase">Sem {week.week}</span>
                                 <span className="text-xs md:text-sm font-bold text-white tracking-tight">{week.title}</span>
@@ -220,7 +220,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       <Button3D 
                         onClick={onClose} 
                         color="white" 
-                        className="w-full h-[52px] sm:h-[48px] rounded-xl md:rounded-2xl"
+                        className="w-full h-[50px] sm:h-[46px] rounded-xl md:rounded-xl"
                       >
                         <span className="font-bold flex items-center gap-2">
                           Começar Jornada <ChevronRight className="w-4 h-4" />

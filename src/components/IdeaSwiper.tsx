@@ -128,7 +128,7 @@ function SwipeCard({
       dragElastic={0.7}
       onDragEnd={isFront && !isEditing ? handleDragEnd : undefined}
       className={cn(
-        "absolute w-full h-[300px] md:h-[340px] p-5 md:p-6 bg-[#1A1A1A] border border-white/10 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl origin-bottom flex flex-col justify-center",
+        "absolute w-full h-[280px] md:h-[310px] p-5 md:p-6 bg-[#1A1A1A] border border-white/10 rounded-[1.5rem] md:rounded-[1.8rem] shadow-2xl origin-bottom flex flex-col justify-center",
         isFront && !isEditing ? "cursor-grab active:cursor-grabbing" : "",
         !isFront && "pointer-events-none"
       )}
@@ -162,7 +162,7 @@ function SwipeCard({
         Passo
       </motion.div>
       <div className={cn("flex flex-col h-full pointer-events-none select-none relative z-0 transition-opacity duration-200", !isFront && "opacity-0")}>
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center text-black shadow-lg">
               <Lightbulb className="w-3.5 h-3.5 md:w-4.5 md:h-4.5" />
@@ -275,10 +275,10 @@ function SwipeCard({
                 }
               }}
             >
-              <h3 className="mb-2 md:mb-3 text-lg md:text-2xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
+              <h3 className="mb-2 md:mb-2.5 text-lg md:text-xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
                 {idea.title}
               </h3>
-              <p className="text-gray-400 text-[10px] md:text-sm leading-relaxed max-w-[95%] group-hover:text-gray-300 transition-colors">
+              <p className="text-gray-400 text-[10px] md:text-xs leading-relaxed max-w-[95%] group-hover:text-gray-300 transition-colors">
                 {idea.description}
               </p>
             </div>
@@ -389,8 +389,8 @@ export function IdeaSwiper({
   return (
     <section className="px-4 pb-24 mx-auto max-w-3xl w-full flex flex-col items-start">
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <div className="mb-8 text-left">
-        <h1 className="text-xl md:text-3xl font-bold text-white mb-2 tracking-tight leading-tight">
+      <div className="mb-6 text-left">
+        <h1 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight leading-tight">
           Avalie as Ideias
         </h1>
         <p className="text-gray-400 text-xs max-w-xl">
@@ -398,7 +398,7 @@ export function IdeaSwiper({
         </p>
       </div>
 
-      <div className="relative w-full max-w-lg h-[400px] mb-12 self-center">
+      <div className="relative w-full max-w-lg h-[360px] mb-8 self-center">
         <AnimatePresence>
           {ideas.length > 0 ? (
             // Reversing so that index 0 is rendered last (on top)
@@ -433,11 +433,11 @@ export function IdeaSwiper({
                 Você curtiu {likedIdeas.length} de {INITIAL_IDEAS.length} ideias.
               </p>
               <div className="w-full space-y-3">
-                <Button3D onClick={handleReload} color="white" className="px-8 h-[52px] sm:h-[48px] w-full">
+                <Button3D onClick={handleReload} color="white" className="px-8 h-[50px] sm:h-[46px] w-full">
                   <RefreshCw className="w-5 h-5 mr-2" />
                   <span>Gerar Mais (Mesmo Tema)</span>
                 </Button3D>
-                <Button3D onClick={onReset} color="gray" className="px-8 h-[52px] sm:h-[48px] w-full">
+                <Button3D onClick={onReset} color="gray" className="px-8 h-[50px] sm:h-[46px] w-full">
                   <Search className="w-5 h-5 mr-2" />
                   <span>Nova Pesquisa (Limpar Tudo)</span>
                 </Button3D>
@@ -451,17 +451,17 @@ export function IdeaSwiper({
         <div className="flex items-center space-x-6 md:space-x-8 self-center">
           <button 
             onClick={() => forceSwipe('left')}
-            className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
             title="Não gostei"
           >
-            <ThumbsDown className="w-6 h-6 md:w-8 md:h-8" />
+            <ThumbsDown className="w-5 h-5 md:w-6 md:h-6" />
           </button>
           <button 
             onClick={() => forceSwipe('right')}
-            className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
             title="Gostei"
           >
-            <ThumbsUp className="w-6 h-6 md:w-8 md:h-8" />
+            <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         </div>
       )}

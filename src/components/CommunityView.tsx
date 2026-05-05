@@ -223,17 +223,17 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
     <div className="max-w-2xl pt-6 md:pt-10 pb-24 px-5 md:px-8 w-full">
       {/* Header */}
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-2xl md:text-3xl font-bold text-white mb-1.5 tracking-tight">
+      <h1 className="text-2xl md:text-2xl font-bold text-white mb-1.5 tracking-tight">
         Comunidade
       </h1>
-      <p className="text-gray-400 mb-8 text-xs">
+      <p className="text-gray-400 mb-6 text-xs">
         Compartilhe suas ideias e inspire outros empreendedores.
       </p>
 
       {/* Share Idea Card */}
       <div className="relative overflow-hidden group">
         <div className={cn(
-          "bg-[#1A1A1A] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 mb-8 shadow-xl transition-all",
+          "bg-[#1A1A1A] border border-white/5 rounded-[1.5rem] md:rounded-[1.8rem] p-6 md:p-7 mb-8 shadow-xl transition-all",
           !isLoggedIn && "blur-[2px] pointer-events-none opacity-50"
         )}>
           <div className="flex items-center gap-2 mb-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
@@ -248,7 +248,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
               if (error) setError("")
             }}
             placeholder="Título da sua ideia..."
-            className="w-full bg-transparent border-b border-white/5 text-white placeholder-gray-600 outline-none text-lg md:text-xl font-bold mb-4 pb-2"
+            className="w-full bg-transparent border-b border-white/5 text-white placeholder-gray-600 outline-none text-lg md:text-lg font-bold mb-4 pb-2"
           />
           <textarea
             value={newPost}
@@ -294,7 +294,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
             <Button3D
               onClick={handlePublish}
               color="white"
-              className="px-8 rounded-2xl h-[52px] sm:h-[48px] w-full md:w-auto"
+              className="px-8 rounded-2xl h-[50px] sm:h-[46px] w-full md:w-auto"
             >
               <Send className="w-4 h-4 mr-2" />
               <span className="font-bold text-sm">Publicar</span>
@@ -309,7 +309,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
               <p className="text-gray-400 text-sm mb-6 leading-relaxed">
                 Você precisa estar logado para compartilhar suas ideias com a comunidade.
               </p>
-              <Button3D onClick={onLogin} color="white" className="w-full h-[52px] sm:h-[48px] rounded-xl">
+              <Button3D onClick={onLogin} color="white" className="w-full h-[50px] sm:h-[46px] rounded-xl">
                 <span className="font-bold text-sm">Fazer Log in</span>
               </Button3D>
             </div>
@@ -336,7 +336,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-[#141414] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 hover:border-white/10 transition-all group relative overflow-hidden"
+            className="bg-[#141414] border border-white/5 rounded-[1.5rem] md:rounded-[1.8rem] p-6 md:p-7 hover:border-white/10 transition-all group relative overflow-hidden"
           >
             {/* Hover Glow */}
             <div className="absolute -inset-x-20 -inset-y-20 bg-white/[0.02] blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -424,10 +424,10 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-tight group-hover:text-white/90 transition-colors">
+                    <h3 className="text-lg md:text-lg font-bold text-white mb-2 tracking-tight group-hover:text-white/90 transition-colors">
                       {post.title}
                     </h3>
-                    <p className="text-gray-400 text-sm md:text-base leading-relaxed group-hover:text-gray-300 transition-colors">
+                    <p className="text-gray-400 text-sm md:text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
                       {post.description}
                     </p>
                   </>
