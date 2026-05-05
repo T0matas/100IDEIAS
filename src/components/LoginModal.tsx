@@ -11,7 +11,7 @@ interface LoginModalProps {
   onLogin: (email: string) => void
 }
 
-type View = 'login' | 'signup'
+type View = 'login' | 'signup' | 'forgot-password'
 
 function BrandingPanel({ compact = false }: { compact?: boolean }) {
 
@@ -61,6 +61,7 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -109,12 +110,48 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
     }
   }
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setSuccess(null)
+
+    if (!email) {
+      setError("Por favor, introduza o seu email.")
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || 'Erro ao enviar email.');
+        return;
+      }
+
+      setSuccess("Se o email estiver registado, receberá um link de recuperação em breve.");
+    } catch (err) {
+      console.error(err);
+      setError('Erro de conexão com o servidor.');
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const switchView = (next: View) => {
     setView(next)
-    setEmail("")
+    setError(null)
+    setSuccess(null)
+    if (next !== 'forgot-password') {
+      setEmail("")
+    }
     setPassword("")
     setName("")
-    setError(null)
   }
 
   return (
@@ -153,7 +190,8 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
                 showPassword={showPassword} setShowPassword={setShowPassword}
                 isLoading={isLoading}
                 error={error}
-                onSubmit={handleSubmit}
+                success={success}
+                onSubmit={view === 'forgot-password' ? handleForgotPassword : handleSubmit}
                 onSwitch={switchView}
               />
             </div>
@@ -168,7 +206,8 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
                 showPassword={showPassword} setShowPassword={setShowPassword}
                 isLoading={isLoading}
                 error={error}
-                onSubmit={handleSubmit}
+                success={success}
+                onSubmit={view === 'forgot-password' ? handleForgotPassword : handleSubmit}
                 onSwitch={switchView}
               />
             </div>
@@ -182,7 +221,7 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
 function FormPanel({
   view, email, setEmail, password, setPassword,
   name, setName, showPassword, setShowPassword,
-  isLoading, error, onSubmit, onSwitch
+  isLoading, error, success, onSubmit, onSwitch
 }: {
   view: View
   email: string; setEmail: (v: string) => void
@@ -191,6 +230,7 @@ function FormPanel({
   showPassword: boolean; setShowPassword: (v: boolean) => void
   isLoading: boolean
   error: string | null
+  success: string | null
   onSubmit: (e: React.FormEvent) => void
   onSwitch: (v: View) => void
 }) {
@@ -206,10 +246,10 @@ function FormPanel({
           className="mb-6"
         >
           <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-1.5">
-            {view === 'login' ? 'Bem-vindo de volta' : 'Criar conta gratuita'}
+            {view === 'login' ? 'Bem-vindo de volta' : view === 'signup' ? 'Criar conta gratuita' : 'Recuperar senha'}
           </h1>
           <p className="text-sm text-gray-500">
-            {view === 'login' ? 'Aceda à sua conta para continuar' : 'Comece a gerar ideias hoje mesmo'}
+            {view === 'login' ? 'Aceda à sua conta para continuar' : view === 'signup' ? 'Comece a gerar ideias hoje mesmo' : 'Introduza o seu email para receber um link'}
           </p>
         </motion.div>
       </AnimatePresence>
@@ -227,7 +267,7 @@ function FormPanel({
 
       <form onSubmit={onSubmit} className="space-y-3">
         <AnimatePresence>
-          {error && (
+          {(error || success) && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -235,9 +275,15 @@ function FormPanel({
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[13px] rounded-xl p-3 text-center mb-3 font-medium">
-                {error}
-              </div>
+              {error ? (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[13px] rounded-xl p-3 text-center mb-3 font-medium">
+                  {error}
+                </div>
+              ) : (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[13px] rounded-xl p-3 text-center mb-3 font-medium">
+                  {success}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -262,25 +308,31 @@ function FormPanel({
           icon={<Mail className="w-4 h-4" />}
         />
 
-        <div className="relative">
-          <FloatingInput
-            id="password" label="Senha" type={showPassword ? "text" : "password"}
-            value={password} onChange={setPassword}
-            icon={<Lock className="w-4 h-4" />}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-300 transition-colors"
-            tabIndex={-1}
-          >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        </div>
+        {view !== 'forgot-password' && (
+          <div className="relative">
+            <FloatingInput
+              id="password" label="Senha" type={showPassword ? "text" : "password"}
+              value={password} onChange={setPassword}
+              icon={<Lock className="w-4 h-4" />}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-300 transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        )}
 
         {view === 'login' && (
           <div className="text-right">
-            <button type="button" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+            <button
+              type="button"
+              onClick={() => onSwitch('forgot-password')}
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+            >
               Esqueceu a senha?
             </button>
           </div>
@@ -299,7 +351,9 @@ function FormPanel({
               </motion.div>
             ) : (
               <motion.div key="t" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
-                <span>{view === 'login' ? 'Entrar na plataforma' : 'Criar conta grátis'}</span>
+                <span>
+                  {view === 'login' ? 'Entrar na plataforma' : view === 'signup' ? 'Criar conta grátis' : 'Enviar link de recuperação'}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </motion.div>
             )}
@@ -308,13 +362,24 @@ function FormPanel({
       </form>
 
       <p className="text-center text-xs text-gray-600 mt-5">
-        {view === 'login' ? 'Ainda não tem conta? ' : 'Já tem conta? '}
-        <button
-          onClick={() => onSwitch(view === 'login' ? 'signup' : 'login')}
-          className="text-white font-semibold hover:underline underline-offset-2 transition-all"
-        >
-          {view === 'login' ? 'Criar conta gratuita' : 'Entrar'}
-        </button>
+        {view === 'forgot-password' ? (
+          <button
+            onClick={() => onSwitch('login')}
+            className="text-white font-semibold hover:underline underline-offset-2 transition-all"
+          >
+            Voltar para o Login
+          </button>
+        ) : (
+          <>
+            {view === 'login' ? 'Ainda não tem conta? ' : 'Já tem conta? '}
+            <button
+              onClick={() => onSwitch(view === 'login' ? 'signup' : 'login')}
+              className="text-white font-semibold hover:underline underline-offset-2 transition-all"
+            >
+              {view === 'login' ? 'Criar conta gratuita' : 'Entrar'}
+            </button>
+          </>
+        )}
       </p>
 
       <p className="text-center text-[10px] text-gray-700 mt-3 leading-relaxed">

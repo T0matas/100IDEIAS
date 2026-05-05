@@ -10,6 +10,7 @@ import { API_URL } from "./config"
 import { MobileView } from "./components/MobileView"
 import { LikedIdeasGrid } from "./components/LikedIdeasGrid"
 import { CommunityView } from "./components/CommunityView"
+import { ResetPasswordModal } from "./components/ResetPasswordModal"
 
 
 
@@ -31,6 +32,7 @@ function App() {
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
   const [currentView, setCurrentView] = useState<'generator' | 'community'>('generator')
   const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const [resetToken, setResetToken] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,6 +85,14 @@ function App() {
       } catch (e) {
         console.error("Erro ao ler usuário do localStorage")
       }
+    }
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get('reset-token')
+    if (token) {
+      setResetToken(token)
     }
   }, [])
 
@@ -298,6 +308,11 @@ function App() {
           setIsLoggedIn(true)
           setUserEmail(email)
         }}
+      />
+
+      <ResetPasswordModal 
+        token={resetToken} 
+        onClose={() => setResetToken(null)} 
       />
     </>
   )
