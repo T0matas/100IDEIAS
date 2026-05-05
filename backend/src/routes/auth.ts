@@ -159,6 +159,23 @@ router.post("/reset-password", async (req: Request, res: Response): Promise<void
       return;
     }
 
+    // Buscar o utilizador para comparar a senha
+    const user = await prisma.user.findUnique({
+      where: { email: resetToken.email },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "Utilizador não encontrado." });
+      return;
+    }
+
+    // Verificar se a nova senha é igual à antiga
+    const isSamePassword = await bcrypt.compare(password, user.password);
+    if (isSamePassword) {
+      res.status(400).json({ error: "A nova senha não pode ser igual à senha atual." });
+      return;
+    }
+
     // Atualizar senha do utilizador
     const hashedPassword = await bcrypt.hash(password, 10);
     await prisma.user.update({

@@ -29,6 +29,19 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.listen(Number(port), "0.0.0.0", () => {
+app.listen(Number(port), "0.0.0.0", async () => {
   console.log(`🚀 Server fully active on port ${port}`);
+  
+  // Teste de conexão com a base de dados
+  const { PrismaClient } = require("@prisma/client");
+  const testPrisma = new PrismaClient();
+  try {
+    await testPrisma.$connect();
+    console.log("✅ Ligação à base de dados (Neon) estabelecida com sucesso!");
+  } catch (error) {
+    console.error("❌ ERRO ao ligar à base de dados:", error);
+    process.exit(1);
+  } finally {
+    await testPrisma.$disconnect();
+  }
 });
