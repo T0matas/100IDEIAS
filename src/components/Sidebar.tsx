@@ -1,4 +1,4 @@
-import { Lightbulb, Bookmark, Search, Settings, PlusCircle, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass, Users } from "lucide-react"
+import { Lightbulb, Bookmark, Search, Settings, Sun, Moon, ChevronDown, HelpCircle, ThumbsUp, Compass, Users } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../lib/utils"
@@ -22,7 +22,17 @@ const MENU_ITEMS = [
   { id: 'comunidade', label: 'Comunidade', icon: Users, category: 'Social' },
 ]
 
-export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsView, isLoggedIn, userEmail, onLogin, onOpenCommunity, currentView }: SidebarProps) {
+export function Sidebar({ 
+  onOpenGostadas, 
+  onOpenFavorites, 
+  onReset, 
+  isResultsView, 
+  isLoggedIn, 
+  userEmail, 
+  onLogin, 
+  onOpenCommunity, 
+  currentView
+}: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
@@ -52,10 +62,10 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
   )
 
   return (
-    <aside className="w-60 h-screen border-r border-white/5 bg-[#0A0A0A] flex flex-col fixed left-0 top-0 z-[150]">
+    <aside className="w-48 h-screen border-r border-white/5 bg-[#0A0A0A] flex flex-col fixed left-0 top-0 z-[150]">
       {/* Logo Area */}
       <div 
-        className="relative p-5 pb-1 w-full"
+        className="relative p-4 pb-1 w-full"
         onMouseEnter={() => setIsUserMenuOpen(true)}
         onMouseLeave={() => setIsUserMenuOpen(false)}
       >
@@ -63,7 +73,7 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
           <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black shadow-sm group-hover:scale-105 transition-transform shrink-0">
             <Lightbulb className="w-3.5 h-3.5" />
           </div>
-          <span className="text-base font-bold text-white tracking-tight flex-1 text-left">
+          <span className="text-sm font-bold text-white tracking-tight flex-1 text-left">
             100<span className="text-gray-500">ideias</span>
           </span>
           <ChevronDown className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
@@ -106,10 +116,10 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Filtrar menu..."
-            className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-2 pl-10 pr-10 text-sm text-white placeholder-gray-600 outline-none focus:bg-white/[0.05] focus:border-white/20 transition-all"
+            placeholder="Filtrar..."
+            className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-2 pl-8 pr-12 text-[11px] text-white placeholder-gray-600 outline-none focus:bg-white/[0.05] focus:border-white/20 transition-all"
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1 px-1.5 py-0.5 rounded-md border border-white/10 bg-white/[0.02] text-[9px] text-gray-600 font-bold tracking-tight pointer-events-none uppercase">
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-0.5 px-1 py-0.5 rounded-md border border-white/10 bg-white/[0.02] text-[8px] text-gray-600 font-bold tracking-tight pointer-events-none uppercase">
             <span>Ctrl</span>
             <span>K</span>
           </div>
@@ -139,8 +149,8 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
                     className={cn(
                       "w-full flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium outline-none transition-all group",
                       (item.id === 'gerador' && currentView === 'generator' && !isResultsView) || (item.id === 'comunidade' && currentView === 'community') 
-                        ? "bg-white/[0.05] text-white" 
-                        : "text-gray-500 hover:text-white hover:bg-white/[0.03]"
+                        ? "bg-white/[0.08] text-white" 
+                        : "text-gray-500 hover:text-white hover:bg-white/[0.05]"
                     )}
                   >
                     <item.icon className={cn(
@@ -198,19 +208,14 @@ export function Sidebar({ onOpenGostadas, onOpenFavorites, onReset, isResultsVie
             <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
           </button>
         </div>
-        <button 
-          onClick={isLoggedIn ? undefined : onLogin}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all text-xs font-semibold cursor-pointer"
-        >
-          {isLoggedIn ? (
-            <>
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Publish</span>
-            </>
-          ) : (
+        {!isLoggedIn && (
+          <button 
+            onClick={onLogin}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all text-[11px] font-semibold cursor-pointer group"
+          >
             <span>Log in</span>
-          )}
-        </button>
+          </button>
+        )}
       </div>
     </aside>
   )

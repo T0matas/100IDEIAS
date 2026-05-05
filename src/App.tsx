@@ -179,7 +179,7 @@ function App() {
           onOpenCommunity={() => setCurrentView('community')}
           currentView={currentView}
         />
-        <main className="flex-1 ml-60 relative min-h-screen flex flex-col">
+        <main className="flex-1 ml-48 relative min-h-screen flex flex-col transition-all duration-300">
 
 
           {/* Generator / Community Section */}
@@ -256,7 +256,6 @@ function App() {
                 <CommunityView 
                   isLoggedIn={isLoggedIn} 
                   onLogin={() => setIsLoginOpen(true)} 
-                  userEmail={userEmail}
                 />
               </motion.div>
             )}

@@ -128,7 +128,7 @@ function SwipeCard({
       dragElastic={0.7}
       onDragEnd={isFront && !isEditing ? handleDragEnd : undefined}
       className={cn(
-        "absolute w-full h-[330px] md:h-[380px] p-5 md:p-8 bg-[#1A1A1A] border border-white/10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl origin-bottom flex flex-col justify-center",
+        "absolute w-full h-[300px] md:h-[340px] p-5 md:p-6 bg-[#1A1A1A] border border-white/10 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl origin-bottom flex flex-col justify-center",
         isFront && !isEditing ? "cursor-grab active:cursor-grabbing" : "",
         !isFront && "pointer-events-none"
       )}
@@ -275,10 +275,10 @@ function SwipeCard({
                 }
               }}
             >
-              <h3 className="mb-2 md:mb-4 text-xl md:text-3xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
+              <h3 className="mb-2 md:mb-3 text-lg md:text-2xl font-bold text-white leading-tight tracking-tight group-hover:text-white/90 transition-colors">
                 {idea.title}
               </h3>
-              <p className="text-gray-400 text-[11px] md:text-lg leading-relaxed max-w-[95%] group-hover:text-gray-300 transition-colors">
+              <p className="text-gray-400 text-[10px] md:text-sm leading-relaxed max-w-[95%] group-hover:text-gray-300 transition-colors">
                 {idea.description}
               </p>
             </div>
@@ -387,13 +387,13 @@ export function IdeaSwiper({
   }
 
   return (
-    <section className="px-4 pb-24 mx-auto max-w-4xl w-full flex flex-col items-start">
+    <section className="px-4 pb-24 mx-auto max-w-3xl w-full flex flex-col items-start">
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <div className="mb-10 text-left">
-        <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight leading-tight">
+      <div className="mb-8 text-left">
+        <h1 className="text-xl md:text-3xl font-bold text-white mb-2 tracking-tight leading-tight">
           Avalie as Ideias
         </h1>
-        <p className="text-gray-400 text-sm max-w-xl">
+        <p className="text-gray-400 text-xs max-w-xl">
           Arraste para a direita as que você curtiu e para a esquerda as que não fazem sentido agora.
         </p>
       </div>
@@ -451,17 +451,17 @@ export function IdeaSwiper({
         <div className="flex items-center space-x-6 md:space-x-8 self-center">
           <button 
             onClick={() => forceSwipe('left')}
-            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-surface border border-white/5 text-red-500 hover:bg-red-500/10 hover:border-red-500/50 transition-all active:scale-90 shadow-xl"
             title="Não gostei"
           >
-            <ThumbsDown className="w-8 h-8 md:w-10 md:h-10" />
+            <ThumbsDown className="w-6 h-6 md:w-8 md:h-8" />
           </button>
           <button 
             onClick={() => forceSwipe('right')}
-            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
+            className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-surface border border-white/5 text-green-500 hover:bg-green-500/10 hover:border-green-500/50 transition-all active:scale-90 shadow-xl"
             title="Gostei"
           >
-            <ThumbsUp className="w-8 h-8 md:w-10 md:h-10" />
+            <ThumbsUp className="w-6 h-6 md:w-8 md:h-8" />
           </button>
         </div>
       )}

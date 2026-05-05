@@ -12,7 +12,11 @@ router.get("/", async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
-        user: { select: { name: true, email: true } }
+        user: { select: { name: true, email: true } },
+        comments: {
+          include: { user: { select: { name: true, email: true } } },
+          orderBy: { createdAt: "asc" }
+        }
       }
     });
 
@@ -24,7 +28,14 @@ router.get("/", async (req: Request, res: Response) => {
       category: idea.category,
       tags: idea.tags ? JSON.parse(idea.tags) : [],
       likes: idea.likes,
+      comments: idea.comments.length,
+      commentList: idea.comments.map((c: any) => ({
+        text: c.content,
+        userName: c.user.name || c.user.email.split("@")[0],
+        userInitials: (c.user.name || c.user.email).substring(0, 2).toUpperCase()
+      })),
       createdAt: idea.createdAt,
+      updatedAt: idea.updatedAt,
       authorName: idea.user.name || idea.user.email.split("@")[0]
     })));
   } catch (error) {
@@ -63,7 +74,10 @@ router.post("/", authenticate, async (req: AuthRequest, res: Response) => {
       category: idea.category,
       tags: idea.tags ? JSON.parse(idea.tags) : [],
       likes: idea.likes,
+      comments: 0,
+      commentList: [],
       createdAt: idea.createdAt,
+      updatedAt: idea.updatedAt,
       authorName: idea.user.name || idea.user.email.split("@")[0]
     });
   } catch (error) {
@@ -109,10 +123,47 @@ router.patch("/:id", authenticate, async (req: AuthRequest, res: Response) => {
       data: { title: title || idea.title, description: description || idea.description }
     });
 
-    res.json({ id: updated.id, title: updated.title, description: updated.description });
+    res.json({ 
+      id: updated.id, 
+      title: updated.title, 
+      description: updated.description,
+      updatedAt: updated.updatedAt 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao editar ideia." });
+  }
+});
+
+// Add a comment to a shared idea (requires auth)
+router.post("/:id/comment", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+    const { content } = req.body;
+
+    if (!content) {
+      res.status(400).json({ error: "Conteúdo do comentário é obrigatório." });
+      return;
+    }
+
+    const comment: any = await prisma.comment.create({
+      data: {
+        content,
+        userId,
+        ideaId: String(id),
+      },
+      include: { user: { select: { name: true, email: true } } }
+    });
+
+    res.status(201).json({
+      text: comment.content,
+      userName: comment.user.name || comment.user.email.split("@")[0],
+      userInitials: (comment.user.name || comment.user.email).substring(0, 2).toUpperCase()
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao adicionar comentário." });
   }
 });
 

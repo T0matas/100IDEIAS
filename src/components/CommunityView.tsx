@@ -16,6 +16,7 @@ interface CommunityPost {
   userId: string
   authorName: string
   createdAt: string
+  updatedAt?: string
   category: string
   title: string
   description: string
@@ -28,7 +29,7 @@ interface CommunityPost {
 
 const API = `${API_URL}/api`
 
-export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewProps) {
+export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
   const [posts, setPosts] = useState<CommunityPost[]>([])
   const [_isLoading, setIsLoading] = useState(true)
   const [newPost, setNewPost] = useState("")
@@ -65,7 +66,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
         const res = await fetch(`${API}/community`)
         if (res.ok) {
           const data = await res.json()
-          setPosts(data.map((p: any) => ({ ...p, isLiked: false, commentList: [] })))
+          setPosts(data.map((p: any) => ({ ...p, isLiked: false })))
         }
       } catch (e) {
         console.error(e)
@@ -120,16 +121,30 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
     } catch (e) { console.error(e) }
   }
 
-  const handleAddComment = (postId: string) => {
+  const handleAddComment = async (postId: string) => {
     if (!commentValue.trim()) return
-    const commentUser = userEmail ? userEmail.split('@')[0] : "Empreendedor"
-    const commentInitials = userEmail ? userEmail.substring(0, 2).toUpperCase() : "EE"
-    setPosts(prev => prev.map(post => post.id === postId ? {
-      ...post,
-      comments: post.comments + 1,
-      commentList: [...(post.commentList || []), { text: commentValue, userName: commentUser, userInitials: commentInitials }]
-    } : post))
-    setCommentValue("")
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/${postId}/comment`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json", 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ content: commentValue })
+      })
+      if (res.ok) {
+        const newComment = await res.json()
+        setPosts(prev => prev.map(post => post.id === postId ? {
+          ...post,
+          comments: post.comments + 1,
+          commentList: [...(post.commentList || []), newComment]
+        } : post))
+        setCommentValue("")
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const handleDelete = async (postId: string) => {
@@ -159,7 +174,13 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
         body: JSON.stringify({ title: editTitle, description: editDescription })
       })
       if (res.ok) {
-        setPosts(prev => prev.map(p => p.id === postId ? { ...p, title: editTitle, description: editDescription } : p))
+        const updated = await res.json()
+        setPosts(prev => prev.map(p => p.id === postId ? { 
+          ...p, 
+          title: updated.title, 
+          description: updated.description,
+          updatedAt: updated.updatedAt 
+        } : p))
         setEditingPostId(null)
       }
     } catch (e) { console.error(e) }
@@ -167,20 +188,20 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
 
 
   return (
-    <div className="max-w-4xl pt-6 md:pt-16 pb-24 px-5 md:px-12 w-full">
+    <div className="max-w-2xl pt-6 md:pt-10 pb-24 px-5 md:px-8 w-full">
       {/* Header */}
       <div className="w-10 h-1 bg-white rounded-full mb-6 opacity-80" />
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      <h1 className="text-2xl md:text-3xl font-bold text-white mb-1.5 tracking-tight">
         Comunidade
       </h1>
-      <p className="text-gray-400 mb-10 text-sm">
+      <p className="text-gray-400 mb-8 text-xs">
         Compartilhe suas ideias e inspire outros empreendedores.
       </p>
 
       {/* Share Idea Card */}
       <div className="relative overflow-hidden group">
         <div className={cn(
-          "bg-[#1A1A1A] border border-white/5 rounded-[2.5rem] p-8 mb-10 shadow-xl transition-all",
+          "bg-[#1A1A1A] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 mb-8 shadow-xl transition-all",
           !isLoggedIn && "blur-[2px] pointer-events-none opacity-50"
         )}>
           <div className="flex items-center gap-2 mb-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
@@ -195,7 +216,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
               if (error) setError("")
             }}
             placeholder="Título da sua ideia..."
-            className="w-full bg-transparent border-b border-white/5 text-white placeholder-gray-600 outline-none text-xl md:text-2xl font-bold mb-4 pb-2"
+            className="w-full bg-transparent border-b border-white/5 text-white placeholder-gray-600 outline-none text-lg md:text-xl font-bold mb-4 pb-2"
           />
           <textarea
             value={newPost}
@@ -204,7 +225,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
               if (error) setError("")
             }}
             placeholder="Descreva sua ideia de negócio..."
-            className="w-full bg-transparent border-none text-white placeholder-gray-600 outline-none resize-none min-h-[120px] text-base md:text-lg mb-6"
+            className="w-full bg-transparent border-none text-white placeholder-gray-600 outline-none resize-none min-h-[100px] text-sm md:text-base mb-6"
           />
 
           <div className="mb-8">
@@ -283,7 +304,7 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-[#141414] border border-white/5 rounded-[2.5rem] p-8 md:p-10 hover:border-white/10 transition-all group relative overflow-hidden"
+            className="bg-[#141414] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 hover:border-white/10 transition-all group relative overflow-hidden"
           >
             {/* Hover Glow */}
             <div className="absolute -inset-x-20 -inset-y-20 bg-white/[0.02] blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -296,7 +317,17 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-white leading-none mb-1.5">{post.authorName}</h4>
-                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{formatDate(post.createdAt)}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{formatDate(post.createdAt)}</p>
+                      {post.updatedAt && new Date(post.updatedAt).getTime() - new Date(post.createdAt).getTime() > 1000 && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-gray-700" />
+                          <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                            Editado
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -361,10 +392,10 @@ export function CommunityView({ isLoggedIn, onLogin, userEmail }: CommunityViewP
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-white/90 transition-colors">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-tight group-hover:text-white/90 transition-colors">
                       {post.title}
                     </h3>
-                    <p className="text-gray-400 text-base md:text-lg leading-relaxed group-hover:text-gray-300 transition-colors">
+                    <p className="text-gray-400 text-sm md:text-base leading-relaxed group-hover:text-gray-300 transition-colors">
                       {post.description}
                     </p>
                   </>

@@ -5,7 +5,6 @@ import {
   Settings, 
   Moon,
   Sun,
-  PlusCircle,
   X,
   Lightbulb,
   ChevronDown,
@@ -229,19 +228,14 @@ export function MobileSidebar({
                   <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-300" />
                 </button>
               </div>
-              <button 
-                onClick={isLoggedIn ? undefined : () => { onOpenLogin(); onClose(); }}
-                className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
-              >
-                {isLoggedIn ? (
-                  <>
-                    <PlusCircle className="w-4 h-4" />
-                    <span>Publish</span>
-                  </>
-                ) : (
+              {!isLoggedIn && (
+                <button 
+                  onClick={() => { onOpenLogin(); onClose(); }}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+                >
                   <span>Log in</span>
-                )}
-              </button>
+                </button>
+              )}
             </div>
           </motion.div>
         </>
