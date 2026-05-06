@@ -41,7 +41,8 @@ router.get("/", async (req: Request, res: Response) => {
         likes: c.likes || 0,
         isLiked: userId ? c.commentLikes.some((cl: any) => cl.userId === userId) : false,
         userName: c.user.name || c.user.email.split("@")[0],
-        userInitials: (c.user.name || c.user.email).substring(0, 2).toUpperCase()
+        userInitials: (c.user.name || c.user.email).substring(0, 2).toUpperCase(),
+        userId: c.userId
       })),
       createdAt: idea.createdAt,
       updatedAt: idea.updatedAt,
@@ -170,7 +171,8 @@ router.post("/:id/comment", authenticate, async (req: AuthRequest, res: Response
       text: comment.content,
       likes: 0,
       userName: comment.user.name || comment.user.email.split("@")[0],
-      userInitials: (comment.user.name || comment.user.email).substring(0, 2).toUpperCase()
+      userInitials: (comment.user.name || comment.user.email).substring(0, 2).toUpperCase(),
+      userId: comment.userId
     });
   } catch (error) {
     console.error(error);
@@ -226,6 +228,61 @@ router.delete("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao eliminar ideia." });
+  }
+});
+
+// Edit a comment (owner only)
+router.patch("/comment/:id", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId!;
+    const { id } = req.params;
+    const { content } = req.body;
+
+    const comment = await prisma.comment.findUnique({ where: { id: String(id) } });
+    if (!comment || comment.userId !== userId) {
+      res.status(403).json({ error: "Sem permissão para editar este comentário." });
+      return;
+    }
+
+    const updated = await prisma.comment.update({
+      where: { id: String(id) },
+      data: { content }
+    });
+
+    res.json({ id: updated.id, text: updated.content });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao editar comentário." });
+  }
+});
+
+// Delete a comment (owner only or post owner)
+router.delete("/comment/:id", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId!;
+    const { id } = req.params;
+
+    const comment = await prisma.comment.findUnique({ 
+      where: { id: String(id) },
+      include: { idea: true }
+    });
+
+    if (!comment) {
+      res.status(404).json({ error: "Comentário não encontrado." });
+      return;
+    }
+
+    // Permit delete if user is comment author OR post author
+    if (comment.userId !== userId && comment.idea.userId !== userId) {
+      res.status(403).json({ error: "Sem permissão para eliminar este comentário." });
+      return;
+    }
+
+    await prisma.comment.delete({ where: { id: String(id) } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao eliminar comentário." });
   }
 });
 

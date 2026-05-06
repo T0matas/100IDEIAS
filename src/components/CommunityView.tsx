@@ -23,7 +23,7 @@ interface CommunityPost {
   likes: number
   comments: number
   isLiked?: boolean
-  commentList?: { id: string, text: string, userName: string, userInitials: string, likes: number, isLiked?: boolean }[]
+  commentList?: { id: string, text: string, userName: string, userInitials: string, likes: number, isLiked?: boolean, userId: string }[]
   matchTag?: string | null
 }
 
@@ -42,6 +42,8 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
   const [editingPostId, setEditingPostId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState("")
   const [editDescription, setEditDescription] = useState("")
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+  const [editCommentValue, setEditCommentValue] = useState("")
 
   const currentUserId = (() => {
     try { return JSON.parse(localStorage.getItem("user") || "{}").id } catch { return null }
@@ -214,6 +216,56 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
           updatedAt: updated.updatedAt 
         } : p))
         setEditingPostId(null)
+      }
+    } catch (e) { console.error(e) }
+  }
+
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    if (!window.confirm("Tens a certeza que queres eliminar este comentário?")) return
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/comment/${commentId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              comments: post.comments - 1,
+              commentList: post.commentList?.filter(c => c.id !== commentId)
+            }
+          }
+          return post
+        }))
+      }
+    } catch (e) { console.error(e) }
+  }
+
+  const handleSaveEditComment = async (postId: string, commentId: string) => {
+    if (!editCommentValue.trim()) return
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API}/community/comment/${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content: editCommentValue })
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              commentList: post.commentList?.map(c => 
+                c.id === commentId ? { ...c, text: updated.text } : c
+              )
+            }
+          }
+          return post
+        }))
+        setEditingCommentId(null)
       }
     } catch (e) { console.error(e) }
   }
@@ -508,7 +560,30 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{comment.userName}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{comment.userName}</p>
+                                {(comment.userId === currentUserId || post.userId === currentUserId) && (
+                                  <div className="flex items-center gap-1.5 ml-2">
+                                    {comment.userId === currentUserId && editingCommentId !== comment.id && (
+                                      <button 
+                                        onClick={() => {
+                                          setEditingCommentId(comment.id)
+                                          setEditCommentValue(comment.text)
+                                        }}
+                                        className="text-gray-500 hover:text-white transition-colors"
+                                      >
+                                        <Pencil className="w-2.5 h-2.5" />
+                                      </button>
+                                    )}
+                                    <button 
+                                      onClick={() => handleDeleteComment(post.id, comment.id)}
+                                      className="text-gray-500 hover:text-red-400 transition-colors"
+                                    >
+                                      <Trash2 className="w-2.5 h-2.5" />
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                               <button 
                                 onClick={() => handleCommentLike(post.id, comment.id)}
                                 className={cn(
@@ -520,7 +595,35 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                                 <span className="font-bold">{comment.likes || 0}</span>
                               </button>
                             </div>
-                            <p className="text-sm text-gray-300 leading-relaxed">{comment.text}</p>
+                            
+                            {editingCommentId === comment.id ? (
+                              <div className="flex gap-2 mt-2">
+                                <input 
+                                  value={editCommentValue}
+                                  onChange={e => setEditCommentValue(e.target.value)}
+                                  autoFocus
+                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white outline-none focus:border-white/20"
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') handleSaveEditComment(post.id, comment.id)
+                                    if (e.key === 'Escape') setEditingCommentId(null)
+                                  }}
+                                />
+                                <button 
+                                  onClick={() => handleSaveEditComment(post.id, comment.id)}
+                                  className="text-green-400 hover:text-green-300 transition-colors"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => setEditingCommentId(null)}
+                                  className="text-gray-500 hover:text-white transition-colors"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-gray-300 leading-relaxed">{comment.text}</p>
+                            )}
                           </div>
                         </div>
                       ))}
