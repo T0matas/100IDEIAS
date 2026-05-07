@@ -42,7 +42,8 @@ router.get("/", async (req: Request, res: Response) => {
         isLiked: userId ? c.commentLikes.some((cl: any) => cl.userId === userId) : false,
         userName: c.user.name || c.user.email.split("@")[0],
         userInitials: (c.user.name || c.user.email).substring(0, 2).toUpperCase(),
-        userId: c.userId
+        userId: c.userId,
+        createdAt: c.createdAt
       })),
       createdAt: idea.createdAt,
       updatedAt: idea.updatedAt,
@@ -172,7 +173,8 @@ router.post("/:id/comment", authenticate, async (req: AuthRequest, res: Response
       likes: 0,
       userName: comment.user.name || comment.user.email.split("@")[0],
       userInitials: (comment.user.name || comment.user.email).substring(0, 2).toUpperCase(),
-      userId: comment.userId
+      userId: comment.userId,
+      createdAt: comment.createdAt
     });
   } catch (error) {
     console.error(error);

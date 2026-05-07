@@ -23,7 +23,7 @@ interface CommunityPost {
   likes: number
   comments: number
   isLiked?: boolean
-  commentList?: { id: string, text: string, userName: string, userInitials: string, likes: number, isLiked?: boolean, userId: string }[]
+  commentList?: { id: string, text: string, userName: string, userInitials: string, likes: number, isLiked?: boolean, userId: string, createdAt?: string }[]
   matchTag?: string | null
 }
 
@@ -57,8 +57,13 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
     const diff = Math.floor((now.getTime() - d.getTime()) / 1000)
     if (diff < 60) return "Agora mesmo"
     if (diff < 3600) return `${Math.floor(diff/60)}min atrás`
-    if (diff < 86400) return `${Math.floor(diff/3600)}h atrás`
-    return `${Math.floor(diff/86400)}d atrás`
+    if (diff < 3600 * 6) return `${Math.floor(diff/3600)}h atrás`
+    const timeStr = d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })
+    const todayStart = new Date(now); todayStart.setHours(0,0,0,0)
+    const yesterdayStart = new Date(todayStart); yesterdayStart.setDate(todayStart.getDate() - 1)
+    if (d >= todayStart) return `Hoje, ${timeStr}`
+    if (d >= yesterdayStart) return `Ontem, ${timeStr}`
+    return d.toLocaleDateString("pt-PT", { day: "numeric", month: "short" }) + `, ${timeStr}`
   }
 
   useEffect(() => {
@@ -584,16 +589,23 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                                   </div>
                                 )}
                               </div>
-                              <button 
-                                onClick={() => handleCommentLike(post.id, comment.id)}
-                                className={cn(
-                                  "flex items-center gap-1.5 text-[10px] transition-all",
-                                  comment.isLiked ? "text-white" : "text-gray-500 hover:text-white"
+                              <div className="flex items-center gap-3">
+                                {comment.createdAt && (
+                                  <span className="text-[10px] text-gray-600 font-medium">
+                                    {formatDate(comment.createdAt)}
+                                  </span>
                                 )}
-                              >
-                                <ThumbsUp className={cn("w-3 h-3", comment.isLiked && "fill-white text-white")} />
-                                <span className="font-bold">{comment.likes || 0}</span>
-                              </button>
+                                <button 
+                                  onClick={() => handleCommentLike(post.id, comment.id)}
+                                  className={cn(
+                                    "flex items-center gap-1.5 text-[10px] transition-all",
+                                    comment.isLiked ? "text-white" : "text-gray-500 hover:text-white"
+                                  )}
+                                >
+                                  <ThumbsUp className={cn("w-3 h-3", comment.isLiked && "fill-white text-white")} />
+                                  <span className="font-bold">{comment.likes || 0}</span>
+                                </button>
+                              </div>
                             </div>
                             
                             {editingCommentId === comment.id ? (
