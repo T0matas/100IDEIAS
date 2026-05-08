@@ -11,6 +11,7 @@ import { MobileView } from "./components/MobileView"
 import { LikedIdeasGrid } from "./components/LikedIdeasGrid"
 import { CommunityView } from "./components/CommunityView"
 import { ResetPasswordModal } from "./components/ResetPasswordModal"
+import { SettingsModal } from "./components/SettingsModal"
 
 
 
@@ -33,6 +34,7 @@ function App() {
   const [currentView, setCurrentView] = useState<'generator' | 'community'>('generator')
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [resetToken, setResetToken] = useState<string | null>(null)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -178,6 +180,7 @@ function App() {
         setIsUpgradeModalOpen={setIsUpgradeModalOpen}
         currentView={currentView}
         onOpenCommunity={() => setCurrentView('community')}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         aiIdeas={aiIdeas}
       />
 
@@ -197,6 +200,7 @@ function App() {
           onLogin={() => setIsLoginOpen(true)}
           onLogout={handleLogout}
           onOpenCommunity={() => setCurrentView('community')}
+          onOpenSettings={() => setIsSettingsOpen(true)}
           currentView={currentView}
         />
         <main className="flex-1 ml-48 relative min-h-screen flex flex-col transition-all duration-300">
@@ -313,6 +317,12 @@ function App() {
       <ResetPasswordModal 
         token={resetToken} 
         onClose={() => setResetToken(null)} 
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        userEmail={userEmail}
       />
     </>
   )

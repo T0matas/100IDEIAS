@@ -29,6 +29,7 @@ interface MobileSidebarProps {
   onOpenLogin: () => void
   onOpenCommunity: () => void
   onLogout: () => void
+  onOpenSettings: () => void
   currentView: 'generator' | 'community'
 }
 
@@ -51,6 +52,7 @@ export function MobileSidebar({
   onOpenLogin,
   onOpenCommunity,
   onLogout,
+  onOpenSettings,
   currentView
 }: MobileSidebarProps) {
   const [searchValue, setSearchValue] = useState("")
@@ -236,7 +238,10 @@ export function MobileSidebar({
                   </AnimatePresence>
                 </motion.button>
 
-                <button className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white hover:bg-white/5 transition-all group">
+                <button 
+                  onClick={() => { onOpenSettings(); onClose(); }}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white hover:bg-white/5 transition-all group"
+                >
                   <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-300" />
                 </button>
               </div>

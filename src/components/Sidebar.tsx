@@ -13,6 +13,7 @@ interface SidebarProps {
   onLogin: () => void
   onLogout: () => void
   onOpenCommunity: () => void
+  onOpenSettings: () => void
   currentView: string
 }
 
@@ -33,6 +34,7 @@ export function Sidebar({
   onLogin, 
   onLogout,
   onOpenCommunity, 
+  onOpenSettings,
   currentView
 }: SidebarProps) {
   const [searchValue, setSearchValue] = useState("")
@@ -215,7 +217,11 @@ export function Sidebar({
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity blur-md -z-0 bg-white/10"
             />
           </motion.button>
-          <button className="p-2 text-gray-500 hover:text-white hover:bg-white/[0.03] rounded-lg transition-all cursor-pointer group" title="Configurações">
+          <button 
+            onClick={onOpenSettings}
+            className="p-2 text-gray-500 hover:text-white hover:bg-white/[0.03] rounded-lg transition-all cursor-pointer group" 
+            title="Configurações"
+          >
             <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
           </button>
         </div>

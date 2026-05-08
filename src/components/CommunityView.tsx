@@ -70,10 +70,13 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
     const fetchPosts = async () => {
       setIsLoading(true)
       try {
-        const res = await fetch(`${API}/community`)
+        const token = localStorage.getItem("token")
+        const res = await fetch(`${API}/community`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        })
         if (res.ok) {
           const data = await res.json()
-          setPosts(data.map((p: any) => ({ ...p, isLiked: false })))
+          setPosts(data)
         }
       } catch (e) {
         console.error(e)
@@ -121,10 +124,18 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
       const token = localStorage.getItem("token")
       const post = posts.find(p => p.id === postId)
       if (!post) return
-      if (!post.isLiked) {
-        await fetch(`${API}/community/${postId}/like`, { method: "POST", headers: { Authorization: `Bearer ${token}` } })
+      
+      const res = await fetch(`${API}/community/${postId}/like`, { 
+        method: "POST", 
+        headers: { Authorization: `Bearer ${token}` } 
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        setPosts(prev => prev.map(p => 
+          p.id === postId ? { ...p, isLiked: data.isLiked, likes: data.likes } : p
+        ))
       }
-      setPosts(prev => prev.map(p => p.id === postId ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 } : p))
     } catch (e) { console.error(e) }
   }
 
@@ -567,7 +578,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{comment.userName}</p>
-                                {(comment.userId === currentUserId || post.userId === currentUserId) && (
+                                {comment.userId === currentUserId && (
                                   <div className="flex items-center gap-1.5 ml-2">
                                     {comment.userId === currentUserId && editingCommentId !== comment.id && (
                                       <button 

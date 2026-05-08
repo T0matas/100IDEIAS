@@ -35,6 +35,45 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
     { week: 4, title: "Lançamento e Tração", tasks: ["Lançamento no Product Hunt/Redes Sociais", "Primeira campanha de tráfego pago", "Análise de métricas de retenção iniciais"] }
   ]
 
+  const handleExportTxt = () => {
+    if (!idea) return;
+
+    let content = `IDEIA: ${idea.title}\n`;
+    content += `==========================================\n\n`;
+    content += `DESCRIÇÃO:\n${idea.description}\n\n`;
+    
+    if (idea.details && idea.details.length > 0) {
+      content += `COMPONENTES DA IDEIA:\n`;
+      idea.details.forEach((detail: string, i: number) => {
+        content += `${i + 1}. ${detail}\n`;
+      });
+      content += `\n`;
+    }
+
+    content += `ROADMAP: PRIMEIROS 30 DIAS\n`;
+    content += `==========================================\n\n`;
+    
+    roadmapData.forEach((week) => {
+      content += `SEMANA ${week.week}: ${week.title}\n`;
+      week.tasks.forEach((task) => {
+        content += `- ${task}\n`;
+      });
+      content += `\n`;
+    });
+
+    content += `\nGerado por 100Ideias`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${idea.title.replace(/\s+/g, '_').toLowerCase()}_one_pager.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <AnimatePresence>
       {idea && (
@@ -158,7 +197,7 @@ export function IdeaDetailModal({ idea, onClose }: IdeaDetailModalProps) {
                       </Button3D>
                       <button 
                         className="flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors py-1.5 md:py-2 group"
-                        onClick={() => alert('Exportando One-Pager em PDF...')}
+                        onClick={handleExportTxt}
                       >
                         <Download className="w-2.5 h-2.5 md:w-3 h-3 group-hover:-translate-y-0.5 transition-transform" />
                         Exportar One-Pager

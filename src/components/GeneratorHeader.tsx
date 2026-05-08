@@ -75,6 +75,10 @@ export function GeneratorHeader({
     if (onValueChange) onValueChange(val)
     else setInternalValue(val)
   }
+  
+  const [selectedType, setSelectedType] = useState<string | null>(null)
+
+  const BUSINESS_TYPES = ["SaaS", "E-commerce", "Mobile App", "Marketplace", "Agência"]
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
@@ -138,6 +142,9 @@ export function GeneratorHeader({
     }
 
     onGenerate();
+    // Keep filters for now or reset? Usually better to keep while refining, but reset on full generate
+    // setSelectedType(null)
+    // setSelectedDifficulty(null)
   }
 
   return (
@@ -190,6 +197,32 @@ export function GeneratorHeader({
             isFlying && "translate-x-12 -translate-y-12 opacity-0"
           )} />
         </Button3D>
+      </div>
+
+      {/* Specific Filters */}
+      <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-1">
+            <div className="w-1 h-1 rounded-full bg-white/20" />
+            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em]">Modelo de Negócio</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {BUSINESS_TYPES.map(type => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(selectedType === type ? null : type)}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-[11px] font-bold border transition-all duration-300",
+                  selectedType === type 
+                    ? "bg-white border-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+                    : "bg-white/[0.03] border-white/5 text-gray-500 hover:border-white/20 hover:text-white"
+                )}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {true && (

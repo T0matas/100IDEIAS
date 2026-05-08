@@ -34,6 +34,7 @@ interface MobileViewProps {
   setIsUpgradeModalOpen: (val: boolean) => void
   currentView: 'generator' | 'community'
   onOpenCommunity: () => void
+  onOpenSettings: () => void
   onLogout: () => void
   isPremium?: boolean
   aiIdeas: any[] | null
@@ -62,6 +63,7 @@ export function MobileView({
   setIsUpgradeModalOpen,
   currentView,
   onOpenCommunity,
+  onOpenSettings,
   onLogout,
   isPremium,
   aiIdeas
@@ -183,6 +185,7 @@ export function MobileView({
         userEmail={userEmail}
         onOpenLogin={onOpenLogin}
         onOpenCommunity={onOpenCommunity}
+        onOpenSettings={onOpenSettings}
         onLogout={onLogout}
         currentView={currentView}
       />

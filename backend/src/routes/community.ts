@@ -1,21 +1,34 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, AuthRequest } from "../middleware/auth";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
 // Get all shared ideas (public feed)
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const userId = req.headers.authorization ? 
-      (await prisma.user.findFirst({ where: { id: (req as any).userId } }))?.id : null;
+    let userId: string | null = null;
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const payload = jwt.verify(token, JWT_SECRET) as { userId: string };
+        userId = payload.userId;
+      } catch (e) {
+        // Token inválido, continua como guest
+      }
+    }
 
     const ideas = await prisma.sharedIdea.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
         user: { select: { name: true, email: true } },
+        ideaLikes: true,
         comments: {
           include: { 
             user: { select: { name: true, email: true } },
@@ -34,6 +47,7 @@ router.get("/", async (req: Request, res: Response) => {
       category: idea.category,
       tags: idea.tags ? JSON.parse(idea.tags) : [],
       likes: idea.likes,
+      isLiked: userId ? idea.ideaLikes.some((il: any) => il.userId === userId) : false,
       comments: idea.comments.length,
       commentList: idea.comments.map((c: any) => ({
         id: c.id,
@@ -102,13 +116,27 @@ router.post("/:id/like", authenticate, async (req: AuthRequest, res: Response) =
   try {
     const { id } = req.params;
     const ideaId = String(id);
+    const userId = req.userId!;
 
-    const idea = await prisma.sharedIdea.update({
-      where: { id: ideaId },
-      data: { likes: { increment: 1 } }
+    const existingLike = await prisma.ideaLike.findUnique({
+      where: { userId_ideaId: { userId, ideaId } }
     });
 
-    res.json({ likes: idea.likes });
+    if (existingLike) {
+      await prisma.$transaction([
+        prisma.ideaLike.delete({ where: { id: existingLike.id } }),
+        prisma.sharedIdea.update({ where: { id: ideaId }, data: { likes: { decrement: 1 } } })
+      ]);
+      const updated = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
+      return res.json({ likes: updated?.likes || 0, isLiked: false });
+    } else {
+      await prisma.$transaction([
+        prisma.ideaLike.create({ data: { userId, ideaId } }),
+        prisma.sharedIdea.update({ where: { id: ideaId }, data: { likes: { increment: 1 } } })
+      ]);
+      const updated = await prisma.sharedIdea.findUnique({ where: { id: ideaId } });
+      return res.json({ likes: updated?.likes || 0, isLiked: true });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao reagir à ideia." });
@@ -274,8 +302,8 @@ router.delete("/comment/:id", authenticate, async (req: AuthRequest, res: Respon
       return;
     }
 
-    // Permit delete if user is comment author OR post author
-    if (comment.userId !== userId && comment.idea.userId !== userId) {
+    // Permit delete only if user is comment author
+    if (comment.userId !== userId) {
       res.status(403).json({ error: "Sem permissão para eliminar este comentário." });
       return;
     }
