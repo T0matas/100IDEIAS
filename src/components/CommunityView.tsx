@@ -4,6 +4,7 @@ import { Send, Users, Lightbulb, ThumbsUp, MessageSquare, Pencil, Trash2, Check,
 import { cn } from "../lib/utils"
 import { Button3D } from "./ui/Button3D"
 import { API_URL } from "../config"
+import { UserProfileModal } from "./UserProfileModal"
 
 interface CommunityViewProps {
   isLoggedIn: boolean
@@ -44,6 +45,7 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
   const [editDescription, setEditDescription] = useState("")
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
   const [editCommentValue, setEditCommentValue] = useState("")
+  const [selectedUserProfileId, setSelectedUserProfileId] = useState<string | null>(null)
 
   const currentUserId = (() => {
     try { return JSON.parse(localStorage.getItem("user") || "{}").id } catch { return null }
@@ -412,11 +414,19 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-white shadow-inner">
+                  <button 
+                    onClick={() => setSelectedUserProfileId(post.userId)}
+                    className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-white shadow-inner hover:bg-white/10 transition-all cursor-pointer"
+                  >
                     {post.authorName.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white leading-none mb-1.5">{post.authorName}</h4>
+                  </button>
+                  <div className="text-left">
+                    <button 
+                      onClick={() => setSelectedUserProfileId(post.userId)}
+                      className="text-base font-bold text-white leading-none mb-1.5 hover:text-white/80 transition-colors cursor-pointer block"
+                    >
+                      {post.authorName}
+                    </button>
                     <div className="flex items-center gap-2">
                       <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{formatDate(post.createdAt)}</p>
                       {post.updatedAt && new Date(post.updatedAt).getTime() - new Date(post.createdAt).getTime() > 1000 && (
@@ -704,6 +714,11 @@ export function CommunityView({ isLoggedIn, onLogin }: CommunityViewProps) {
           </div>
         ))}
       </div>
+
+      <UserProfileModal 
+        userId={selectedUserProfileId}
+        onClose={() => setSelectedUserProfileId(null)}
+      />
     </div>
   )
 }

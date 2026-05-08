@@ -316,4 +316,66 @@ router.delete("/comment/:id", authenticate, async (req: AuthRequest, res: Respon
   }
 });
 
+// Get user profile and their ideas
+router.get("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    
+    // Check for current user if logged in to mark likes
+    let currentUserId: string | null = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const payload = jwt.verify(token, JWT_SECRET) as { userId: string };
+        currentUserId = payload.userId;
+      } catch (e) {}
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { 
+        id: true,
+        name: true, 
+        email: true,
+        sharedIdeas: {
+          orderBy: { createdAt: "desc" },
+          include: {
+            user: { select: { name: true, email: true } },
+            ideaLikes: true,
+            comments: { select: { id: true } }
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "Usuário não encontrado." });
+      return;
+    }
+
+    res.json({
+      id: user.id,
+      name: user.name || user.email.split("@")[0],
+      initials: (user.name || user.email).substring(0, 2).toUpperCase(),
+      ideas: user.sharedIdeas.map((idea: any) => ({
+        id: idea.id,
+        userId: idea.userId,
+        title: idea.title,
+        description: idea.description,
+        category: idea.category,
+        tags: idea.tags ? JSON.parse(idea.tags) : [],
+        likes: idea.likes,
+        isLiked: currentUserId ? idea.ideaLikes.some((il: any) => il.userId === currentUserId) : false,
+        comments: idea.comments.length,
+        createdAt: idea.createdAt,
+        authorName: user.name || user.email.split("@")[0]
+      }))
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar perfil." });
+  }
+});
+
 export default router;
