@@ -319,7 +319,7 @@ router.delete("/comment/:id", authenticate, async (req: AuthRequest, res: Respon
 // Get user profile and their ideas
 router.get("/user/:userId", async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const userId = req.params.userId as string;
     
     // Check for current user if logged in to mark likes
     let currentUserId: string | null = null;
@@ -334,10 +334,7 @@ router.get("/user/:userId", async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { 
-        id: true,
-        name: true, 
-        email: true,
+      include: {
         sharedIdeas: {
           orderBy: { createdAt: "desc" },
           include: {

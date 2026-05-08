@@ -109,7 +109,7 @@ export function UserProfileModal({ userId, onClose }: UserProfileModalProps) {
 
           {/* Ideas List */}
           <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4 custom-scrollbar">
-            {!loading && profile && profile.ideas.map((idea, idx) => (
+            {!loading && profile && profile.ideas.map((idea) => (
               <div 
                 key={idea.id}
                 className="bg-[#1A1A1A] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all group"

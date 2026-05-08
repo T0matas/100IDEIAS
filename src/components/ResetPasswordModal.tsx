@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Lock, Eye, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react"
-import { cn } from "../lib/utils"
+import { Eye, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react"
 import { Button3D } from "./ui/Button3D"
 import { API_URL } from "../config"
 
